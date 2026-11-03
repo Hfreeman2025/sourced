@@ -1,0 +1,46 @@
+# Dependencies and package caches
+node_modules/
+.npm-cache/
+
+# Build output
+dist/
+dist-next/
+*.tsbuildinfo
+
+# Tool and browser caches (Playwright engines live in .cache/browsers)
+.cache/
+.vite/
+coverage/
+test-results/
+playwright-report/
+blob-report/
+
+# Temporary browser profiles
+*-profile/
+profile-*/
+user-data*/
+.playwright*/
+
+# Secrets and keys
+.env*
+*.pem
+*.key
+*.p12
+*.pfx
+*.crt
+secrets/
+
+# Model weights (none ship with Sourced; shared weights live outside repos)
+.models/
+models/
+*.onnx
+*.safetensors
+*.gguf
+*.ckpt
+*.pt
+
+# Logs and editor or OS clutter
+*.log
+.DS_Store
+.idea/
+.vscode/

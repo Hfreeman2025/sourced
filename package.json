@@ -1,0 +1,45 @@
+{
+  "name": "sourced",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "A tiny language where every number carries its source.",
+  "license": "MIT",
+  "author": "Harry Freeman",
+  "scripts": {
+    "dev": "vite --host 127.0.0.1",
+    "build": "tsc --noEmit && vite build",
+    "preview": "vite preview --host 127.0.0.1",
+    "typecheck": "tsc --noEmit",
+    "lint": "biome lint src tests scripts",
+    "test": "tsx --test tests/*.test.ts",
+    "licenses": "node scripts/licenses.mjs",
+    "check": "npm run typecheck && npm run lint && npm test && npm run build && npm run licenses",
+    "measure": "tsx scripts/measure.ts",
+    "test:browser": "node scripts/browser-check.mjs",
+    "test:layout": "node scripts/layout-check.mjs",
+    "test:contrast": "node scripts/contrast-check.mjs",
+    "measure:browser": "node scripts/performance.mjs",
+    "refresh:dev": "node scripts/refresh-dev.mjs"
+  },
+  "dependencies": {
+    "@codemirror/autocomplete": "6.20.0",
+    "@codemirror/commands": "6.10.0",
+    "@codemirror/language": "6.11.3",
+    "@codemirror/lint": "6.9.2",
+    "@codemirror/state": "6.5.2",
+    "@codemirror/view": "6.38.6",
+    "@lezer/highlight": "1.2.3"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "2.6.4",
+    "@types/node": "24.10.0",
+    "playwright": "1.64.1",
+    "tsx": "4.20.6",
+    "typescript": "5.9.3",
+    "vite": "7.3.7"
+  },
+  "engines": {
+    "node": ">=22.13.0"
+  }
+}
