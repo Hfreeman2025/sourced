@@ -149,7 +149,7 @@ function drawing(width: number, d: OutputDistribution, label: string): SVGSVGEle
     { text: `P5 ${number(summary.p5)}`, x: p5 },
     { text: `P50 ${number(summary.p50)}`, x: p50 },
     { text: `P95 ${number(summary.p95)}${!inline && d.unit ? ` ${d.unit}` : ''}`, x: p95 },
-  ].map((item) => ({ ...item, width: item.text.length * 6.9 }));
+  ].map((item) => ({ ...item, width: item.text.length * 7.2 }));
   const placed = texts.map((item) => ({
     ...item,
     left: Math.min(Math.max(left, item.x - item.width / 2), right - item.width),

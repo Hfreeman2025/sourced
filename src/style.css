@@ -1,5 +1,5 @@
 :root {
-  font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif;
+  font-family: var(--sans);
   color: #20252b;
   background: #fff;
   font-synthesis: none;
@@ -9,7 +9,10 @@
   --blue:#2449d8;
   --orange:#b84d04;
   --grid:#eef0f2;
-  --mono:Menlo,'SFMono-Regular',Consolas,monospace;
+  /* IBM Plex: Sans reads, Mono records, Sans Condensed signs. */
+  --sans:'IBM Plex Sans','IBM Plex Sans fallback','Helvetica Neue',Helvetica,Arial,sans-serif;
+  --mono:'IBM Plex Mono','IBM Plex Mono fallback',Menlo,'SFMono-Regular',Consolas,monospace;
+  --signs:'IBM Plex Sans Condensed','IBM Plex Sans Condensed fallback','IBM Plex Sans',Arial,sans-serif;
 }
 
 * {
@@ -299,7 +302,7 @@ a {
   background: white!important;
   border: 1px solid #aab3c0!important;
   border-radius: 0!important;
-  font: 12px/1.6 'Helvetica Neue',sans-serif!important;
+  font: 12px/1.6 var(--sans)!important;
 }
 
 .cm-tooltip-lint {
@@ -743,7 +746,7 @@ a {
 }
 
 .tornado-extent.undefined {
-  font: 11px 'Helvetica Neue',sans-serif;
+  font: 11px var(--sans);
   color: #b53119;
 }
 
@@ -802,7 +805,7 @@ a {
   min-height: 100%;
   display: block;
   overflow: visible;
-  font-family: 'Helvetica Neue',Helvetica,sans-serif;
+  font-family: var(--sans);
 }
 
 .diagram-sheet {
@@ -1130,7 +1133,7 @@ dialog kbd {
 
 .boot {
   padding: 26px;
-  font: 14px 'Helvetica Neue',Helvetica,Arial,sans-serif;
+  font: 14px var(--sans);
   color: #20252b;
 }
 
@@ -1788,7 +1791,7 @@ dialog kbd {
 .noscript-message {
   border: 1px solid #a33019;
   padding: 16px;
-  font: 13px/1.7 Helvetica,sans-serif;
+  font: 13px/1.7 var(--sans);
   margin: 20px;
 }
 
@@ -2176,7 +2179,7 @@ dialog kbd {
 }
 
 .distribution-caption {
-  font: 12px 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  font: 500 12px var(--signs);
   fill: #46525e;
 }
 
@@ -2231,7 +2234,8 @@ dialog kbd {
 
 /* Variance shares beside the tornado. */
 .share-finding {
-  margin: 4px 0 6px;
+  margin: 0;
+  padding: 4px 0 6px;
   font-size: 12px;
   line-height: 1.5;
   color: var(--ink);
@@ -2534,7 +2538,7 @@ dialog kbd {
 }
 
 @media(max-width:760px) {
-  .distribution.is-exact,.distribution.is-pending {
+  .distribution.is-exact {
     min-height: 0;
     padding-top: 12px;
     padding-bottom: 14px;
@@ -2628,5 +2632,121 @@ dialog kbd {
 @media(min-width:761px) and (max-width:1150px) {
   .results .answer,.results .result-detail {
     min-height: 176px;
+  }
+}
+
+/* Type: IBM Plex Sans Condensed for signs (the wordmark, headings and
+   labels, and the drawing's annotation lettering, as on a drafted sheet).
+   Weights stay on the files served: 500 and 600. No synthesis. */
+.heading h1 {
+  font-family: var(--signs);
+  font-weight: 600;
+  letter-spacing: -.4px;
+}
+
+.panel-heading h2,.explanation h2,.dialog-header h2,dialog h3 {
+  font-family: var(--signs);
+  font-weight: 600;
+}
+
+.dialog-header h2 {
+  letter-spacing: -.2px;
+}
+
+.answer-label,.output-option>span,.lineage-receipt dt,.tornado-axis,.adjust-bar label,
+.variation-label,.mobile-example,.share-note,.diagram-label,.diagram-scroll-hint {
+  font-family: var(--signs);
+  font-weight: 500;
+}
+
+.answer-label {
+  font-size: 14px;
+}
+
+.diagram-label {
+  letter-spacing: .1px;
+}
+
+/* Zero layout shift: boxes that change their wording keep their size, and
+   content that arrives late has its room reserved. */
+.share-finding.pending {
+  color: #59636c;
+}
+
+#result-state {
+  min-width: 150px;
+  text-align: right;
+}
+
+@media(min-width:761px) {
+  .sensitivity-panel .sensitivity-body {
+    min-height: 262px;
+  }
+  #sensitivity-status {
+    min-width: 280px;
+    text-align: right;
+  }
+  .variation-label {
+    min-width: 118px;
+    justify-content: flex-end;
+  }
+  .adjust-bar label {
+    min-width: 40px;
+  }
+}
+
+@media(max-width:760px) {
+  .answer-interval {
+    min-height: 42px;
+  }
+  .distribution {
+    min-height: 172px;
+  }
+  .mobile-example select {
+    width: 150px;
+  }
+}
+
+/* The interval slot contains its line's margin, so reserving it reserves all of it. */
+.answer-interval {
+  display: flow-root;
+}
+
+@media(max-width:760px) {
+  .results .result-detail {
+    min-height: 82px;
+  }
+  .results #outputs {
+    min-height: 74px;
+  }
+}
+
+/* Explicit line heights: the reserved interval slot is the same height in
+   every engine, whatever each rounds "normal" line height to. */
+.answer-interval .interval-line {
+  line-height: 20px;
+}
+
+.answer-interval .interval-note {
+  line-height: 16px;
+}
+
+@media(max-width:760px) {
+  .answer-interval .interval-line {
+    line-height: 18px;
+  }
+  .results #outputs {
+    min-height: 80px;
+  }
+}
+
+/* The values' font shorthand resets line height; keep the line's own. */
+.answer-interval .interval-line strong {
+  line-height: inherit;
+}
+
+@media(max-width:760px) {
+  .answer-interval {
+    min-height: 46px;
   }
 }

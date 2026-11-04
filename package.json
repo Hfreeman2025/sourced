@@ -20,6 +20,7 @@
     "test:layout": "node scripts/layout-check.mjs",
     "test:contrast": "node scripts/contrast-check.mjs",
     "measure:browser": "node scripts/performance.mjs",
+    "test:shift": "node scripts/shift-check.mjs",
     "refresh:dev": "node scripts/refresh-dev.mjs"
   },
   "dependencies": {

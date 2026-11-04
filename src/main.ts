@@ -672,3 +672,5 @@ document.querySelectorAll<HTMLButtonElement>('.workspace button[disabled]').forE
 exampleSelect.disabled = false;
 startWorker();
 setExample(0);
+// Plex swaps in after first paint; refit the printed answer to its real width.
+document.fonts?.ready.then(() => resultView.fit());

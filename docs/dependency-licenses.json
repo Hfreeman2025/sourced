@@ -414,6 +414,44 @@
     "installed": false
   },
   {
+    "name": "@fontsource/ibm-plex-mono",
+    "version": "5.3.0",
+    "license": "OFL-1.1",
+    "vendored": "public/fonts",
+    "files": [
+      "ibm-plex-mono-latin-400-normal.woff2",
+      "ibm-plex-mono-latin-600-normal.woff2"
+    ],
+    "bytes": 30328,
+    "source": "https://registry.npmjs.org/@fontsource/ibm-plex-mono/-/ibm-plex-mono-5.3.0.tgz"
+  },
+  {
+    "name": "@fontsource/ibm-plex-sans",
+    "version": "5.3.0",
+    "license": "OFL-1.1",
+    "vendored": "public/fonts",
+    "files": [
+      "ibm-plex-sans-latin-400-normal.woff2",
+      "ibm-plex-sans-latin-400-italic.woff2",
+      "ibm-plex-sans-latin-500-normal.woff2",
+      "ibm-plex-sans-latin-600-normal.woff2"
+    ],
+    "bytes": 95380,
+    "source": "https://registry.npmjs.org/@fontsource/ibm-plex-sans/-/ibm-plex-sans-5.3.0.tgz"
+  },
+  {
+    "name": "@fontsource/ibm-plex-sans-condensed",
+    "version": "5.3.0",
+    "license": "OFL-1.1",
+    "vendored": "public/fonts",
+    "files": [
+      "ibm-plex-sans-condensed-latin-500-normal.woff2",
+      "ibm-plex-sans-condensed-latin-600-normal.woff2"
+    ],
+    "bytes": 39768,
+    "source": "https://registry.npmjs.org/@fontsource/ibm-plex-sans-condensed/-/ibm-plex-sans-condensed-5.3.0.tgz"
+  },
+  {
     "name": "@lezer/common",
     "version": "1.5.5",
     "license": "MIT",

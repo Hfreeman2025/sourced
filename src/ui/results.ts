@@ -11,6 +11,14 @@ export function createResultView(
   const rows: HTMLButtonElement[] = [];
   // Persistent, so a redraw of the answer never drops the current interval.
   const intervalSlot = element('div', 'answer-interval');
+  /** Shrinks a long printed answer to its column; rerun once web fonts arrive. */
+  const fit = () => {
+    const amount = answer.querySelector('.answer-value');
+    if (!(amount instanceof HTMLElement)) return;
+    amount.style.fontSize = '';
+    if (amount.scrollWidth > answer.clientWidth)
+      amount.style.fontSize = `${((parseFloat(getComputedStyle(amount).fontSize) * answer.clientWidth) / amount.scrollWidth) * 0.98}px`;
+  };
   const render = (
     result: RunResult,
     index: number,
@@ -102,16 +110,11 @@ export function createResultView(
     detail.append(receipt);
     if (result.outputs.length > 3)
       detail.append(element('span', 'result-receipt', `${result.outputs.length} results · scroll to select`));
-    requestAnimationFrame(() => {
-      const amount = answer.querySelector('.answer-value');
-      if (!(amount instanceof HTMLElement)) return;
-      amount.style.fontSize = '';
-      if (amount.scrollWidth > answer.clientWidth)
-        amount.style.fontSize = `${((parseFloat(getComputedStyle(amount).fontSize) * answer.clientWidth) / amount.scrollWidth) * 0.98}px`;
-    });
+    requestAnimationFrame(fit);
   };
   return {
     render,
+    fit,
     /** The selected result's 90% interval, directly under the printed answer. */
     interval(line: HTMLElement | undefined) {
       if ((line?.textContent ?? '') === intervalSlot.textContent) return;

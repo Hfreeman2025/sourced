@@ -77,7 +77,14 @@ export function renderSensitivity(
   }
   const withShares = Boolean(shares && shares.status !== 'none');
   container.classList.toggle('has-shares', withShares);
-  if (withShares && shares?.finding) container.append(element('p', 'share-finding', shares.finding));
+  // The finding's line is reserved while the shares are estimated, so the
+  // table does not move when the sentence arrives.
+  if (withShares)
+    container.append(
+      shares?.finding
+        ? element('p', 'share-finding', shares.finding)
+        : element('p', 'share-finding pending', 'Estimating which uncertainty matters…'),
+    );
   const maximum = Math.max(...rows.map((row) => row.impact)) || 1;
   const axis = element('div', 'tornado-axis');
   axis.append(
