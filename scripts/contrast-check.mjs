@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import { launch } from './browsers.mjs';
-import { writeFile } from 'node:fs/promises';
+import { mkdir, writeFile } from 'node:fs/promises';
 const browser = await launch(process.env.SOURCED_CONTRAST_BROWSER ?? 'chromium');
 const page = await browser.newPage({ viewport: { width: 1440, height: 900 } });
 await page.goto(process.env.SOURCED_URL ?? 'http://127.0.0.1:4177', { waitUntil: 'networkidle' });
@@ -64,7 +64,8 @@ const main = await page.evaluate(check);
 await page.getByRole('button', { name: 'Reference' }).click();
 const guide = await page.evaluate(check);
 const report = { main, guide };
-await writeFile('shots/v3/contrast.json', `${JSON.stringify(report, null, 2)}\n`);
+await mkdir('shots', { recursive: true });
+await writeFile('shots/contrast.json', `${JSON.stringify(report, null, 2)}\n`);
 console.log(JSON.stringify(report, null, 2));
 await browser.close();
 assert.deepEqual(main.failures, [], 'Playground text contrast');

@@ -1,0 +1,178 @@
+:root {
+  font-family: var(--sans);
+  color: #20252b;
+  background: #fff;
+  font-synthesis: none;
+  --ink:#20252b;
+  --muted:#626a72;
+  --line:#d5dadd;
+  --blue:#2449d8;
+  --orange:#b84d04;
+  --grid:#eef0f2;
+  /* IBM Plex: Sans reads, Mono records, Sans Condensed signs. */
+  --sans:'IBM Plex Sans','IBM Plex Sans fallback','Helvetica Neue',Helvetica,Arial,sans-serif;
+  --mono:'IBM Plex Mono','IBM Plex Mono fallback',Menlo,'SFMono-Regular',Consolas,monospace;
+  --signs:'IBM Plex Sans Condensed','IBM Plex Sans Condensed fallback','IBM Plex Sans',Arial,sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+}
+
+button,input,select {
+  font: inherit;
+  color: inherit;
+  border-radius: 0;
+}
+
+button {
+  cursor: pointer;
+}
+
+button,a,input,select {
+  -webkit-tap-highlight-color: transparent;
+}
+
+button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,[tabindex]:focus-visible {
+  outline: 2px solid var(--blue);
+  outline-offset: 3px;
+}
+
+button {
+  background: transparent;
+}
+
+button:disabled {
+  cursor: default;
+  color: #676f77;
+}
+
+a {
+  color: var(--blue);
+  text-underline-offset: 3px;
+}
+
+::selection {
+  background: #dce5ff;
+}
+
+.workspace {
+  max-width: 1600px;
+  margin: 0 auto;
+  padding: 0 28px;
+}
+
+.masthead {
+  height: 82px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 2px solid var(--ink);
+  gap: 20px;
+}
+
+.heading {
+  display: flex;
+  align-items: baseline;
+  gap: 25px;
+}
+
+.heading h1 {
+  font-size: 26px;
+  letter-spacing: -1px;
+  margin: 0;
+  font-weight: 650;
+}
+
+.heading p {
+  font-size: 13px;
+  color: #515a61;
+  margin: 0;
+}
+
+.masthead nav {
+  display: flex;
+  gap: 24px;
+  align-items: center;
+  font-size: 12px;
+}
+
+#network-status {
+  font-size: 11px;
+  color: #535d64;
+  border-right: 1px solid var(--line);
+  padding-right: 24px;
+}
+
+.text-button {
+  border: 0;
+  border-bottom: 1px solid transparent;
+  padding: 2px 0;
+  background: transparent;
+  font-size: 12px;
+  white-space: nowrap;
+}
+
+.text-button:hover {
+  color: var(--blue);
+  border-bottom-color: var(--blue);
+}
+
+.example-bar {
+  height: 62px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+#examples {
+  display: flex;
+  align-self: stretch;
+  gap: 28px;
+}
+
+.example-tab {
+  border: 0;
+  border-bottom: 2px solid transparent;
+  font-size: 12px;
+  color: #626a72;
+  padding: 0 2px;
+}
+
+.example-tab:hover {
+  color: var(--blue);
+}
+
+.example-tab[aria-selected=true] {
+  color: var(--ink);
+  border-bottom-color: var(--ink);
+}
+
+.example-actions {
+  display: flex;
+  gap: 22px;
+  align-items: center;
+  font-size: 11px;
+  color: #626a72;
+}
+
+#edit-state {
+  font-size: 11px;
+}
+
+.changed {
+  color: var(--orange)!important;
+}
+
+.example-actions .text-button {
+  font-size: 11px;
+}
+
+.mobile-example {
+  display: none;
+}

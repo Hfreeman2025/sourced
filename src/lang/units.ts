@@ -59,7 +59,7 @@ const finiteScale = (scale: number): number => {
     );
   return scale;
 };
-export const multiplyDimensions = (a: Dimensions, b: Dimensions, sign = 1): Dimensions => {
+const multiplyDimensions = (a: Dimensions, b: Dimensions, sign = 1): Dimensions => {
   const result = { ...a };
   for (const [key, value] of Object.entries(b)) {
     const sum = add(result[key] ?? rational(0), rational(value.n * sign, value.d));

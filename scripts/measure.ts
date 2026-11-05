@@ -1,5 +1,5 @@
 import { performance } from 'node:perf_hooks';
-import { writeFile } from 'node:fs/promises';
+import { mkdir, writeFile } from 'node:fs/promises';
 import { examples } from '../src/examples';
 import { run, parse, check, compile } from '../src/lang';
 import { collectInputs } from '../src/analysis/inputs';
@@ -49,7 +49,9 @@ const rows = examples.map((example) => {
       return {
         uncertainInputs: uncertain,
         previewMedianMs: timed(30, () => propagate(example.code, result, inputs, PREVIEW_RUNS)),
-        monteCarlo100kMedianMs: timed(9, () => propagate(example.code, result, inputs, MONTE_CARLO_RUNS)),
+        monteCarlo100kMedianMs: timed(9, () =>
+          propagate(example.code, result, inputs, MONTE_CARLO_RUNS),
+        ),
         sobolMedianMs: timed(9, () => varianceShares(example.code, result, inputs, 0)),
         sobolRuns: varianceShares(example.code, result, inputs, 0).evaluations,
       };
@@ -65,5 +67,6 @@ const report = {
   note: 'Local measurements on a shared machine; core excludes worker messaging and DOM rendering. Monte Carlo timings cover sampling, column evaluation and summaries for every output; Sobol covers the (k + 2) × 16,384-run design and 100 bootstrap resamples for the first output.',
   rows,
 };
-await writeFile('shots/v3/core-performance.json', `${JSON.stringify(report, null, 2)}\n`);
+await mkdir('shots', { recursive: true });
+await writeFile('shots/core-performance.json', `${JSON.stringify(report, null, 2)}\n`);
 console.log(JSON.stringify(report, null, 2));

@@ -158,7 +158,11 @@ test('Sobol estimation drops undefined rows and reports a constant output as no 
   assert.equal(constant.variance, 0);
   assert.ok(Number.isNaN(constant.indices[0]?.first));
   const holes = Float64Array.from({ length: 10 }, (_, i) => (i === 3 ? Number.NaN : i));
-  const estimate = sobolIndices(holes, Float64Array.from({ length: 10 }, (_, i) => 9 - i), [holes]);
+  const estimate = sobolIndices(
+    holes,
+    Float64Array.from({ length: 10 }, (_, i) => 9 - i),
+    [holes],
+  );
   assert.equal(estimate.dropped, 1);
   assert.equal(estimate.rows, 9);
 });

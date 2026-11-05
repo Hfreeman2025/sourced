@@ -88,7 +88,10 @@ for (const [family, styles] of Object.entries(fonts)) {
     if (info) bytes += info.size;
     else violations.push(`public/fonts/${file}: missing vendored font`);
   }
-  if (!ofl.includes(`@fontsource/${family} 5.3.0`) || !ofl.includes('SIL Open Font License, Version 1.1'))
+  if (
+    !ofl.includes(`@fontsource/${family} 5.3.0`) ||
+    !ofl.includes('SIL Open Font License, Version 1.1')
+  )
     violations.push(`@fontsource/${family}: OFL 1.1 notice missing from public/fonts/OFL.txt`);
   vendored++;
   rows.push({

@@ -1,0 +1,83 @@
+/* Zero layout shift: boxes that change their wording keep their size, and
+   content that arrives late has its room reserved. */
+.share-finding.pending {
+  color: #59636c;
+}
+
+#result-state {
+  min-width: 150px;
+  text-align: right;
+}
+
+@media(min-width:761px) {
+  .sensitivity-panel .sensitivity-body {
+    min-height: 262px;
+  }
+  #sensitivity-status {
+    min-width: 280px;
+    text-align: right;
+  }
+  .variation-label {
+    min-width: 118px;
+    justify-content: flex-end;
+  }
+  .adjust-bar label {
+    min-width: 40px;
+  }
+}
+
+@media(max-width:760px) {
+  .answer-interval {
+    min-height: 42px;
+  }
+  .distribution {
+    min-height: 172px;
+  }
+  .mobile-example select {
+    width: 150px;
+  }
+}
+
+/* The interval slot contains its line's margin, so reserving it reserves all of it. */
+.answer-interval {
+  display: flow-root;
+}
+
+@media(max-width:760px) {
+  .results .result-detail {
+    min-height: 82px;
+  }
+  .results #outputs {
+    min-height: 74px;
+  }
+}
+
+/* Explicit line heights: the reserved interval slot is the same height in
+   every engine, whatever each rounds "normal" line height to. */
+.answer-interval .interval-line {
+  line-height: 20px;
+}
+
+.answer-interval .interval-note {
+  line-height: 16px;
+}
+
+@media(max-width:760px) {
+  .answer-interval .interval-line {
+    line-height: 18px;
+  }
+  .results #outputs {
+    min-height: 80px;
+  }
+}
+
+/* The values' font shorthand resets line height; keep the line's own. */
+.answer-interval .interval-line strong {
+  line-height: inherit;
+}
+
+@media(max-width:760px) {
+  .answer-interval {
+    min-height: 46px;
+  }
+}

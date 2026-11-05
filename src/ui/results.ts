@@ -96,20 +96,29 @@ export function createResultView(
     receipt.append(element('h4', '', 'Selected result lineage'));
     const deps = output.value?.dependencies ?? [];
     const list = element('dl');
-    for (const [prefix, title] of [['source:', 'Sources'], ['assumption:', 'Assumptions']] as const) {
-      const names = deps.filter((d) => d.startsWith(prefix)).map((d) =>
-        `${prefix === 'source:' ? '@' : ''}${d.slice(prefix.length)}`);
+    for (const [prefix, title] of [
+      ['source:', 'Sources'],
+      ['assumption:', 'Assumptions'],
+    ] as const) {
+      const names = deps
+        .filter((d) => d.startsWith(prefix))
+        .map((d) => `${prefix === 'source:' ? '@' : ''}${d.slice(prefix.length)}`);
       list.append(element('dt', '', title), element('dd', '', names.join(' · ') || 'None'));
     }
     const spread = [
       spreads.cited.length ? `cited ${spreads.cited.join(' · ')}` : '',
       spreads.assumed.length ? `assumed ${spreads.assumed.join(' · ')}` : '',
     ].filter(Boolean);
-    list.append(element('dt', '', 'Spreads'), element('dd', '', spread.join('; ') || 'None · exact'));
+    list.append(
+      element('dt', '', 'Spreads'),
+      element('dd', '', spread.join('; ') || 'None · exact'),
+    );
     receipt.append(list);
     detail.append(receipt);
     if (result.outputs.length > 3)
-      detail.append(element('span', 'result-receipt', `${result.outputs.length} results · scroll to select`));
+      detail.append(
+        element('span', 'result-receipt', `${result.outputs.length} results · scroll to select`),
+      );
     requestAnimationFrame(fit);
   };
   return {

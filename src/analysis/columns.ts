@@ -56,7 +56,8 @@ export function evaluateColumns(
   const check = (lane: Lane): Lane => {
     // A shared number equals the checked central run, so it is already finite.
     if (typeof lane === 'number') return lane;
-    for (let j = 0; j < size; j++) if (!Number.isFinite(lane[j] ?? Number.NaN)) lane[j] = Number.NaN;
+    for (let j = 0; j < size; j++)
+      if (!Number.isFinite(lane[j] ?? Number.NaN)) lane[j] = Number.NaN;
     return lane;
   };
   // Sampled inputs are shared between Sobol's sample sets, so an overflowing
@@ -83,12 +84,14 @@ export function evaluateColumns(
     const out = new Float64Array(size);
     if (typeof a === 'number')
       for (let j = 0; j < size; j++) out[j] = f(a, (b as Float64Array)[j] ?? Number.NaN);
-    else if (typeof b === 'number') for (let j = 0; j < size; j++) out[j] = f(a[j] ?? Number.NaN, b);
+    else if (typeof b === 'number')
+      for (let j = 0; j < size; j++) out[j] = f(a[j] ?? Number.NaN, b);
     else for (let j = 0; j < size; j++) out[j] = f(a[j] ?? Number.NaN, b[j] ?? Number.NaN);
     return check(out);
   };
   const quantity = (datum: Datum | undefined): Column => {
-    if (!datum || Array.isArray(datum)) throw new Error('A checked program produced a list where a quantity belongs.');
+    if (!datum || Array.isArray(datum))
+      throw new Error('A checked program produced a list where a quantity belongs.');
     return datum;
   };
   const evaluate = (expr: Expr, scope: Map<string, Datum>, fns: Map<string, Closure>): Datum => {
@@ -182,9 +185,14 @@ export function evaluateColumns(
     functions = new Map<string, Closure>(),
     outputs: (Column | undefined)[] = [];
   for (const statement of program.statements) {
-    if (statement.kind === 'binding') env.set(statement.name, evaluate(statement.value, env, functions));
+    if (statement.kind === 'binding')
+      env.set(statement.name, evaluate(statement.value, env, functions));
     if (statement.kind === 'function')
-      functions.set(statement.name, { statement, env: new Map(env), functions: new Map(functions) });
+      functions.set(statement.name, {
+        statement,
+        env: new Map(env),
+        functions: new Map(functions),
+      });
     if (statement.kind === 'print') {
       const values = statement.parts.filter((part) => 'expr' in part);
       if (!values.length) outputs.push(undefined);

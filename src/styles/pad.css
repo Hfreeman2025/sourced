@@ -1,0 +1,246 @@
+.workbench {
+  display: grid;
+  grid-template-columns: minmax(0,1.27fr) minmax(0,1fr);
+  gap: 18px;
+}
+
+.panel {
+  border: 1px solid var(--line);
+  min-width: 0;
+  position: relative;
+  background: #fff;
+}
+
+.panel-heading {
+  height: 40px;
+  padding: 0 16px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  border-bottom: 1px solid var(--line);
+  background: #f8f9fa;
+}
+
+.panel-heading h2 {
+  font-size: 12px;
+  font-weight: 650;
+  margin: 0;
+  letter-spacing: .1px;
+}
+
+.panel-heading>span {
+  font-size: 10px;
+  color: #626a72;
+}
+
+.panel-heading #filename {
+  margin-left: auto;
+}
+
+.panel-heading #check-status {
+  min-width: 79px;
+  text-align: right;
+  font-size: 10px;
+}
+
+.is-valid {
+  color: #345f3e!important;
+}
+
+.has-error {
+  color: #b53119!important;
+}
+
+.code-wrap {
+  position: relative;
+}
+
+#editor {
+  height: 330px;
+  background-color: #fff;
+  background-image: linear-gradient(#f0f2f5 1px,transparent 1px);
+  background-size: 100% 18px;
+}
+
+.cm-editor {
+  height: 100%;
+  font-size: 12px;
+  line-height: 22px;
+  color: #252c33;
+}
+
+.cm-editor.cm-focused {
+  outline: none!important;
+}
+
+.cm-scroller {
+  font-family: var(--mono)!important;
+  line-height: 18px!important;
+  overflow: auto;
+}
+
+.cm-content {
+  padding: 10px 0!important;
+}
+
+.cm-line {
+  padding: 0 12px 0 6px!important;
+}
+
+.cm-gutters {
+  background: #fafbfc!important;
+  border-right: 1px solid #e5e8eb!important;
+  color: #687178!important;
+}
+
+.cm-gutterElement {
+  line-height: 22px;
+}
+
+.cm-lineNumbers .cm-gutterElement {
+  min-width: 33px!important;
+  padding: 0 7px!important;
+}
+
+.cm-lintGutter {
+  width: 8px!important;
+}
+
+.cm-activeLineGutter {
+  background: #e9edf5!important;
+  color: #273544!important;
+}
+
+.cm-selectionBackground,.cm-focused .cm-selectionBackground {
+  background: #dbe5ff!important;
+}
+
+.cm-cursor {
+  border-left-color: var(--blue)!important;
+}
+
+.cm-tooltip {
+  background: white!important;
+  border: 1px solid #aab3c0!important;
+  border-radius: 0!important;
+  font: 12px/1.6 var(--sans)!important;
+}
+
+.cm-tooltip-lint {
+  max-width: 360px;
+}
+
+.cm-diagnostic-error {
+  border-left-color: #b53119!important;
+}
+
+.scrub-number {
+  border-bottom: 1px dashed #b84d04;
+  cursor: ew-resize!important;
+  background: #fff1e7;
+  color: #963c00!important;
+  padding-bottom: 1px;
+  touch-action: none;
+  user-select: none;
+}
+
+.scrub-number:hover {
+  background: #ffe2ca;
+  border-bottom-style: solid;
+}
+
+.dependency-token {
+  background: #dce5ff!important;
+  color: #183cae!important;
+  box-shadow: 0 1px 0 #9eb4ef;
+}
+
+.has-trace .cm-activeLineGutter {
+  background: #dce5ff!important;
+}
+
+.is-scrubbing,.is-scrubbing * {
+  cursor: ew-resize!important;
+  user-select: none!important;
+}
+
+.adjust-bar {
+  height: 47px;
+  border-top: 1px solid var(--line);
+  padding: 0 12px;
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  margin: 0;
+  background: #f8f9fa;
+  position: relative;
+  font-size: 11px;
+}
+
+.adjust-bar>label {
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.adjust-bar select {
+  max-width: 125px;
+  width: 100px;
+  padding: 5px 3px;
+  border: 0;
+  border-bottom: 1px solid #a6afb5;
+  background: transparent;
+  font-size: 11px;
+}
+
+.adjust-bar input {
+  width: 90px;
+  height: 28px;
+  border: 1px solid #9ca7b1;
+  padding: 3px 7px;
+  background: white;
+  font-size: 12px;
+  font-variant-numeric: tabular-nums;
+}
+
+.adjust-bar input:focus {
+  border-color: var(--blue);
+}
+
+#input-unit {
+  font-size: 10px;
+  max-width: 65px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+#adjust-hint {
+  margin-left: auto;
+  color: #626a72;
+  font-size: 10px;
+  max-width: 170px;
+  line-height: 1.5;
+}
+
+#quantity-error {
+  color: #a33018;
+  position: absolute;
+  bottom: -19px;
+  left: 12px;
+  background: #fff;
+  z-index: 2;
+}
+
+#gesture-feedback {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  z-index: 5;
+  border: 1px solid #b84d04;
+  border-left-width: 3px;
+  background: #fff9f2;
+  padding: 10px 14px;
+  font-size: 12px;
+  font-variant-numeric: tabular-nums;
+  pointer-events: none;
+  max-width: calc(100% - 50px);
+}

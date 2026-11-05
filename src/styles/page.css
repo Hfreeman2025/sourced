@@ -1,0 +1,163 @@
+.context-strip {
+  display: flex;
+  gap: 20px;
+  justify-content: space-between;
+  border-bottom: 1px solid var(--line);
+  padding: 13px 0;
+  font-size: 10px;
+  line-height: 1.5;
+  color: #5d6871;
+}
+
+.context-strip>span:last-child {
+  text-align: right;
+}
+
+.explanation {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 60px;
+  padding: 29px 0 24px;
+  max-width: 1120px;
+}
+
+.explanation h2 {
+  font-size: 13px;
+  font-weight: 550;
+  margin: 0 0 8px;
+}
+
+.explanation p {
+  font-size: 12px;
+  line-height: 1.8;
+  color: #59636b;
+  margin: 0;
+}
+
+footer {
+  display: flex;
+  justify-content: space-between;
+  gap: 20px;
+  padding: 15px 0 24px;
+  border-top: 1px solid var(--line);
+  font-size: 10px;
+  color: #5f6870;
+}
+
+.skip-link {
+  position: fixed;
+  top: -50px;
+  left: 20px;
+  background: #fff;
+  color: var(--blue);
+  padding: 10px;
+  z-index: 20;
+}
+
+.skip-link:focus {
+  top: 10px;
+}
+
+.dialog-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 20px;
+  border-bottom: 1px solid var(--line);
+  padding-bottom: 16px;
+}
+
+.dialog-header h2 {
+  margin: 0;
+  font-size: 22px;
+  font-weight: 550;
+  letter-spacing: -.5px;
+}
+
+.dialog-close {
+  border: 1px solid #687482;
+  background: white;
+  padding: 6px 11px;
+  font-size: 12px;
+}
+
+dialog {
+  width: min(740px,calc(100% - 32px));
+  max-height: 88vh;
+  border: 1px solid #4a5662;
+  background: white;
+  color: var(--ink);
+  padding: 24px;
+  box-shadow: 10px 10px 0 #18202b14;
+}
+
+dialog::backdrop {
+  background: #26334466;
+}
+
+dialog p {
+  font-size: 13px;
+  line-height: 1.8;
+  color: #54606b;
+}
+
+dialog h3 {
+  font-size: 16px;
+  font-weight: 550;
+  margin: 19px 0 9px;
+}
+
+dialog section {
+  border-top: 1px solid var(--line);
+  padding: 10px 0;
+}
+
+dialog pre {
+  font: 12px/1.8 var(--mono);
+  background: #f4f6f8;
+  border-left: 2px solid #6c7e94;
+  overflow: auto;
+  padding: 15px;
+}
+
+dialog code {
+  font-size: 11px;
+  font-family: var(--mono);
+  color: #283d7a;
+}
+
+dialog kbd {
+  font-size: 11px;
+  border: 1px solid #aeb7c0;
+  padding: 1px 4px;
+}
+
+.reference-note {
+  background: #f4f6f8;
+  padding: 12px!important;
+}
+
+#compiled-code {
+  max-height: 360px;
+  font-size: 10px;
+}
+
+#toast {
+  position: fixed;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  border: 1px solid #7c8794;
+  border-left: 3px solid var(--blue);
+  background: white;
+  padding: 11px 18px;
+  font-size: 12px;
+  z-index: 50;
+  visibility: hidden;
+  max-width: 90%;
+  width: max-content;
+}
+
+#toast.visible {
+  visibility: visible;
+}

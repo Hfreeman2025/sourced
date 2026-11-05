@@ -46,7 +46,8 @@ function shareCell(row: SensitivityRow, state: ShareState | undefined): HTMLElem
   plot.append(alone, joint, whisker);
   const interaction = share.total - share.first;
   const value = element('span', 'share-value', percent(share.first));
-  if (interaction >= 0.005) value.append(element('span', 'share-joint-value', ` +${percent(interaction)}`));
+  if (interaction >= 0.005)
+    value.append(element('span', 'share-joint-value', ` +${percent(interaction)}`));
   cell.append(plot, value);
   cell.title = `Alone: ${percent(share.first)} (95% bootstrap ${percent(share.firstLow)}–${percent(share.firstHigh)}). With interactions: ${percent(share.total)} (${percent(share.totalLow)}–${percent(share.totalHigh)}).`;
   return cell;
@@ -142,7 +143,10 @@ export function renderSensitivity(
       b.append(cell);
       const described = cell.title || cell.textContent;
       if (described)
-        b.setAttribute('aria-label', `${b.getAttribute('aria-label')}; share of variance: ${described}`);
+        b.setAttribute(
+          'aria-label',
+          `${b.getAttribute('aria-label')}; share of variance: ${described}`,
+        );
     }
     b.addEventListener('pointerenter', () => highlight(row.input.id));
     b.addEventListener('pointerleave', () => highlight(undefined));

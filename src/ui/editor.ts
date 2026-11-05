@@ -62,61 +62,72 @@ export function createEditor(
   // `view` is assigned below; the keymap reads it only when a key is pressed.
   let view: EditorView;
   const extensions = [
-        deferredEditorScroll,
-        numberField,
-        gutters({ fixed: false }),
-        lineNumbers(),
-        highlightActiveLineGutter(),
-        history(),
-        bracketMatching(),
-        lintGutter(),
-        language,
-        syntaxHighlighting(highlighting),
-        EditorView.contentAttributes.of({
-          'aria-label': 'Sourced code editor',
-          spellcheck: 'false',
-          autocapitalize: 'off',
-          autocorrect: 'off',
-        }),
-        EditorView.lineWrapping,
-        keymap.of([
-          {
-            key: 'Mod-Enter',
-            run: () => {
-              onRun();
-              return true;
-            },
-          },
-          {
-            key: 'Escape',
-            run: () => {
-              view.contentDOM.blur();
-              return true;
-            },
-          },
-          ...defaultKeymap,
-          ...historyKeymap,
-          indentWithTab,
-        ]),
-        autocompletion({
-          override: [
-            (context) => {
-              const word = context.matchBefore(/[\w.]+/);
-              if (!word || (!context.explicit && word.from === word.to)) return null;
-              return {
-                from: word.from,
-                options: [
-                  ...['source', 'let', 'assume', 'assumed', 'fn', 'print', 'as', 'sum', 'round', 'sqrt'],
-                  ...['normal', 'lognormal', 'triangular', 'uniform'],
-                  ...unitNames,
-                ].map((label) => ({ label, type: unitNames.includes(label) ? 'type' : 'keyword' })),
-              };
-            },
-          ],
-        }),
-        EditorView.updateListener.of((update) => {
-          if (update.docChanged) onChange(update.state.doc.toString());
-        }),
+    deferredEditorScroll,
+    numberField,
+    gutters({ fixed: false }),
+    lineNumbers(),
+    highlightActiveLineGutter(),
+    history(),
+    bracketMatching(),
+    lintGutter(),
+    language,
+    syntaxHighlighting(highlighting),
+    EditorView.contentAttributes.of({
+      'aria-label': 'Sourced code editor',
+      spellcheck: 'false',
+      autocapitalize: 'off',
+      autocorrect: 'off',
+    }),
+    EditorView.lineWrapping,
+    keymap.of([
+      {
+        key: 'Mod-Enter',
+        run: () => {
+          onRun();
+          return true;
+        },
+      },
+      {
+        key: 'Escape',
+        run: () => {
+          view.contentDOM.blur();
+          return true;
+        },
+      },
+      ...defaultKeymap,
+      ...historyKeymap,
+      indentWithTab,
+    ]),
+    autocompletion({
+      override: [
+        (context) => {
+          const word = context.matchBefore(/[\w.]+/);
+          if (!word || (!context.explicit && word.from === word.to)) return null;
+          return {
+            from: word.from,
+            options: [
+              ...[
+                'source',
+                'let',
+                'assume',
+                'assumed',
+                'fn',
+                'print',
+                'as',
+                'sum',
+                'round',
+                'sqrt',
+              ],
+              ...['normal', 'lognormal', 'triangular', 'uniform'],
+              ...unitNames,
+            ].map((label) => ({ label, type: unitNames.includes(label) ? 'type' : 'keyword' })),
+          };
+        },
+      ],
+    }),
+    EditorView.updateListener.of((update) => {
+      if (update.docChanged) onChange(update.state.doc.toString());
+    }),
   ];
   view = new EditorView({ parent, state: EditorState.create({ doc: code, extensions }) });
   installScrubbing(view, scrub);

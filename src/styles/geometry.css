@@ -1,0 +1,220 @@
+/* The editor fills the row the results panel sets, so no dead space remains. */
+@media(min-width:761px) {
+  .calculation {
+    display: flex;
+    flex-direction: column;
+  }
+  .calculation .code-wrap {
+    flex: 1 1 auto;
+    min-height: 0;
+  }
+  .calculation #editor {
+    height: 100%;
+    min-height: 210px;
+  }
+  #sensitivity.has-shares .tornado-axis,#sensitivity.has-shares .tornado-row {
+    grid-template-columns: 150px minmax(0, 1fr) 80px 138px;
+  }
+}
+
+@media(min-width:761px) and (max-width:1150px) {
+  #sensitivity.has-shares .tornado-axis,#sensitivity.has-shares .tornado-row {
+    grid-template-columns: 104px minmax(0, 1fr) 70px 118px;
+  }
+}
+
+.interval-note {
+  flex-basis: 100%;
+  margin-left: 0;
+}
+
+@media(min-width:761px) {
+  .analysis-grid .sensitivity-panel {
+    height: auto;
+  }
+  .sensitivity-panel .sensitivity-body {
+    height: auto;
+    min-height: 237px;
+    max-height: 340px;
+  }
+}
+
+.terminal-spread {
+  fill: #dce5ff;
+  stroke: var(--blue);
+  stroke-width: 1;
+  stroke-linejoin: round;
+}
+
+.terminal-spread-base {
+  stroke: var(--blue);
+  stroke-width: 1;
+}
+
+.terminal-spread.assumed {
+  fill: #fbe6d6;
+  stroke: var(--orange);
+}
+
+.terminal-spread-base.assumed {
+  stroke: var(--orange);
+}
+
+.diagram-spread {
+  font-family: var(--mono);
+}
+
+/* The answer row reserves room for a what-if comparison, so dragging never
+   pushes the distribution down. */
+@media(min-width:761px) {
+  .results .answer,.results .result-detail {
+    min-height: 138px;
+  }
+  .results .lineage-receipt h4 {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+  }
+  .results .result-detail {
+    gap: 3px;
+    padding-top: 18px;
+  }
+  .results .result-detail .scenario-note {
+    margin-bottom: 6px;
+  }
+}
+
+@media(min-width:761px) {
+  .results {
+    grid-template-columns: minmax(0, .9fr) minmax(0, 1.1fr);
+  }
+  .results .answer,.results .result-detail {
+    min-height: 150px;
+  }
+}
+
+@media(min-width:761px) and (max-width:1150px) {
+  .results .answer,.results .result-detail {
+    min-height: 166px;
+  }
+}
+
+/* The editor fills its row without sizing it: long programs scroll inside. */
+@media(min-width:761px) {
+  .calculation .code-wrap {
+    flex: 1 1 auto;
+    min-height: 330px;
+  }
+  .calculation #editor {
+    position: absolute;
+    inset: 0;
+    height: auto;
+    min-height: 0;
+  }
+}
+
+@media(min-width:761px) and (max-height:700px) {
+  .calculation .code-wrap {
+    min-height: 210px;
+  }
+}
+
+@media(max-width:760px) {
+  .distribution.is-exact {
+    min-height: 0;
+    padding-top: 12px;
+    padding-bottom: 14px;
+  }
+}
+
+@media(max-width:760px) {
+  #sensitivity.has-shares .tornado-axis {
+    grid-template-rows: 22px 18px;
+    height: auto;
+  }
+  #sensitivity.has-shares .tornado-axis .share-heading {
+    display: block;
+    grid-column: 2 / -1;
+    padding-left: 0;
+  }
+  .analysis-foot {
+    flex-wrap: wrap;
+  }
+  .analysis-foot>span:last-child {
+    flex-basis: 100%;
+    text-align: left;
+  }
+}
+
+.answer-interval .interval-line {
+  margin: 8px 0 0;
+}
+
+@media(max-width:760px) {
+  .answer-interval .interval-line {
+    margin-top: 6px;
+  }
+  .results .answer {
+    padding-bottom: 8px;
+  }
+}
+
+@media(min-width:761px) {
+  .results {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  }
+}
+
+@media(min-width:1151px) {
+  .results .answer,.results .result-detail {
+    min-height: 160px;
+  }
+}
+
+/* No numeric result: nothing to draw, so the hint stays beside its error. */
+.distribution.is-empty {
+  min-height: 0;
+  padding: 0;
+  border: 0;
+}
+
+/* The previous program's distribution, while this one samples: faded and
+   labelled, never presented as current. */
+.distribution.is-stale .distribution-plot {
+  opacity: .32;
+}
+
+.distribution-meta .stale-note {
+  color: #9c3f00;
+}
+
+/* Between tablet and wide desktop the answer column is narrow: the interval
+   is set a step smaller so it stays on two lines. */
+@media(min-width:761px) and (max-width:1439px) {
+  .answer-interval .interval-line {
+    font-size: 13px;
+  }
+  .answer-interval .interval-line strong {
+    font-size: 13.5px;
+    letter-spacing: -.4px;
+  }
+  .answer-interval .interval-note {
+    font-size: 11px;
+  }
+}
+
+/* Reserved answer-row height, measured per band so a what-if comparison
+   never moves the distribution (see the drag check in browser-check.mjs). */
+@media(min-width:1151px) and (max-width:1279px) {
+  .results .answer,.results .result-detail {
+    min-height: 176px;
+  }
+}
+
+@media(min-width:761px) and (max-width:1150px) {
+  .results .answer,.results .result-detail {
+    min-height: 176px;
+  }
+}

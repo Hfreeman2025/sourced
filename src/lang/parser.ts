@@ -142,7 +142,12 @@ class Parser {
       );
     const value = Number(token.text.replaceAll('_', '')) * (negative ? -1 : 1);
     if (!Number.isFinite(value))
-      fail(token, 'Number too large', 'This number is outside the finite range.', 'Use a smaller value.');
+      fail(
+        token,
+        'Number too large',
+        'This number is outside the finite range.',
+        'Use a smaller value.',
+      );
     const unit = isUnit(this.peek().text) ? this.unit() : '';
     return { value, unit, start: first.start, end: this.tokens[this.index - 1]?.end ?? token.end };
   }
@@ -156,7 +161,11 @@ class Parser {
       return { kind: 'plusminus', width, start: first.start, end: width.end };
     }
     const named = ['normal', 'lognormal', 'triangular', 'uniform'];
-    if (first.kind === 'id' && named.includes(first.text) && this.tokens[this.index + 1]?.text === '(') {
+    if (
+      first.kind === 'id' &&
+      named.includes(first.text) &&
+      this.tokens[this.index + 1]?.text === '('
+    ) {
       this.next();
       this.expect('(');
       if (first.text === 'normal') {

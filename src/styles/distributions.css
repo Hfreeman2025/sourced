@@ -1,0 +1,382 @@
+/* Answers as distributions.
+   The results panel is a measured grid: the printed answer and its lineage
+   side by side, the sampled distribution drawn full width beneath. */
+.results {
+  display: grid;
+  grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr);
+  grid-template-rows: auto auto 1fr auto;
+  grid-template-areas: "head head" "answer detail" "dist dist" "outputs outputs";
+}
+
+.results>.panel-heading { grid-area: head; }
+.results #answer { grid-area: answer; }
+.results #result-detail { grid-area: detail; }
+.results #distribution { grid-area: dist; }
+.results #outputs { grid-area: outputs; }
+
+.results .answer {
+  height: auto;
+  min-height: 112px;
+  padding: 18px 12px 6px 23px;
+}
+
+.results .answer-value {
+  font-size: 50px;
+  line-height: 1.2;
+  margin-top: 6px;
+}
+
+.results .result-detail {
+  min-height: 0;
+  padding: 16px 23px 6px 0;
+}
+
+.results .lineage-receipt h4 {
+  margin: 0 0 7px;
+}
+
+.results .lineage-receipt dl {
+  grid-template-columns: 72px minmax(0, 1fr);
+  gap: 4px 10px;
+}
+
+.distribution {
+  padding: 2px 23px 6px;
+  min-height: 166px;
+  min-width: 0;
+}
+
+.distribution.is-pending,.distribution.is-exact,.distribution.is-empty {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
+  gap: 10px;
+  border-top: 1px solid var(--grid);
+}
+
+.distribution-status {
+  margin: 0;
+  max-width: 52ch;
+  font-size: 12px;
+  line-height: 1.6;
+  color: #4e5861;
+}
+
+.distribution-status strong {
+  color: var(--ink);
+  font-weight: 600;
+}
+
+.suggestion-button {
+  font-size: 12px;
+  border-bottom-color: var(--line);
+}
+
+.suggestion-button code {
+  font: 12px var(--mono);
+  color: var(--blue);
+}
+
+.interval-line {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 2px 6px;
+  margin: 0 0 2px;
+  font-size: 14px;
+  color: var(--ink);
+}
+
+.interval-line strong {
+  font: 500 15px var(--mono);
+  letter-spacing: -.3px;
+}
+
+.interval-note {
+  margin-left: 8px;
+  font-size: 12px;
+  color: #59636c;
+}
+
+.distribution-plot {
+  display: block;
+  overflow: visible;
+}
+
+.distribution-outline {
+  fill: none;
+  stroke: var(--ink);
+  stroke-width: 1;
+  stroke-linejoin: miter;
+}
+
+.distribution-base,.dimension-line,.dimension-tick {
+  stroke: var(--ink);
+  stroke-width: 1;
+}
+
+.dimension-tick {
+  stroke-width: 1.3;
+}
+
+.dimension-extension {
+  stroke: #7a858f;
+  stroke-width: .75;
+}
+
+.dimension-arrow {
+  fill: var(--ink);
+}
+
+.distribution-median {
+  stroke: var(--ink);
+  stroke-width: 1;
+  stroke-dasharray: 10 3 2 3;
+}
+
+.distribution-central {
+  stroke: var(--ink);
+  stroke-width: 1.6;
+}
+
+.distribution-value {
+  font: 12px var(--mono);
+  fill: var(--ink);
+}
+
+.distribution-caption {
+  font: 500 12px var(--signs);
+  fill: #46525e;
+}
+
+.distribution-meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 2px 14px;
+  margin: 2px 0 0;
+  font-size: 11px;
+  line-height: 1.5;
+  color: #59636c;
+}
+
+.is-preview .distribution-meta span:first-child {
+  color: #9c3f00;
+}
+
+.distribution-meta .has-error {
+  color: #b53119;
+}
+
+.distribution-meta .reseed {
+  font-size: 11px;
+  margin-left: auto;
+}
+
+.output-option .output-interval {
+  display: block;
+  margin-top: 3px;
+  font: 11px var(--mono);
+  color: #59636c;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.output-option .output-interval:empty {
+  display: none;
+}
+
+#outputs {
+  height: 78px;
+  min-height: 78px;
+  margin-bottom: 16px;
+}
+
+.output-option {
+  min-height: 77px;
+  padding-top: 11px;
+}
+
+/* Variance shares beside the tornado. */
+.share-finding {
+  margin: 0;
+  padding: 4px 0 6px;
+  font-size: 12px;
+  line-height: 1.5;
+  color: var(--ink);
+}
+
+#sensitivity.has-shares .tornado-axis,#sensitivity.has-shares .tornado-row {
+  grid-template-columns: 112px minmax(0, 1fr) 84px 142px;
+}
+
+.tornado-axis span:nth-child(3) {
+  text-align: right;
+}
+
+.tornado-axis .share-heading {
+  text-align: left;
+  padding-left: 2px;
+}
+
+.share {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 58px;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+
+.share-plot {
+  position: relative;
+  height: 12px;
+  border-left: 1px solid #c5ccd2;
+  background-image: linear-gradient(to right, transparent calc(50% - .5px), #edf0f3 calc(50% - .5px), #edf0f3 calc(50% + .5px), transparent calc(50% + .5px));
+}
+
+.share-first,.share-joint,.share-ci {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  display: block;
+}
+
+.share-first {
+  left: 0;
+  background: var(--ink);
+}
+
+.share-joint {
+  background: repeating-linear-gradient(135deg, var(--ink) 0 1px, transparent 1px 3.5px);
+  box-shadow: inset 0 0 0 1px var(--ink);
+}
+
+.share-ci {
+  top: 5px;
+  bottom: 5px;
+  border-left: 1px solid var(--blue);
+  border-right: 1px solid var(--blue);
+}
+
+.share-ci:after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  border-top: 1px solid var(--blue);
+}
+
+.share-value {
+  font: 11px var(--mono);
+  text-align: right;
+  white-space: nowrap;
+}
+
+.share-joint-value {
+  color: #59636c;
+}
+
+.share-note {
+  grid-column: 1 / -1;
+  font-size: 11px;
+  color: #626a72;
+}
+
+.alone-key,.joint-key {
+  display: inline-block;
+  width: 12px;
+  height: 7px;
+  margin-left: 8px;
+  background: var(--ink);
+}
+
+.joint-key {
+  margin-left: 6px;
+  background: repeating-linear-gradient(135deg, var(--ink) 0 1px, transparent 1px 3.5px);
+  box-shadow: inset 0 0 0 1px var(--ink);
+}
+
+.scrub-number.spread-number {
+  text-decoration-style: dotted;
+}
+
+.explanation code {
+  font: 12px var(--mono);
+  color: var(--ink);
+}
+
+@media(max-width:1150px) {
+  #sensitivity.has-shares .tornado-axis,#sensitivity.has-shares .tornado-row {
+    grid-template-columns: 96px minmax(0, 1fr) 72px 122px;
+  }
+  .results .answer-value {
+    font-size: 42px;
+  }
+}
+
+@media(max-width:760px) {
+  .results {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-areas: "head" "answer" "dist" "detail" "outputs";
+  }
+  .results .answer {
+    min-height: 0;
+    padding: 11px 15px 4px;
+  }
+  .results .answer-value {
+    font-size: 39px;
+    margin-top: 4px;
+  }
+  .results .result-detail {
+    padding: 4px 15px 10px;
+  }
+  .distribution {
+    padding: 2px 15px 8px;
+  }
+  .interval-line {
+    font-size: 13px;
+  }
+  .interval-line strong {
+    font-size: 14px;
+  }
+  .interval-note {
+    margin-left: 0;
+    flex-basis: 100%;
+  }
+  #outputs {
+    height: auto;
+    min-height: 64px;
+  }
+  .output-option {
+    min-height: 63px;
+  }
+  .sensitivity-body {
+    height: auto;
+    max-height: 320px;
+  }
+  .analysis-grid .sensitivity-panel {
+    height: auto;
+  }
+  #sensitivity.has-shares .tornado-axis {
+    grid-template-columns: 94px minmax(0, 1fr) 76px;
+  }
+  #sensitivity.has-shares .tornado-axis .share-heading {
+    display: none;
+  }
+  #sensitivity.has-shares .tornado-row {
+    grid-template-columns: 94px minmax(0, 1fr) 76px;
+    grid-template-rows: 31px 22px;
+    height: auto;
+  }
+  #sensitivity.has-shares .share {
+    grid-column: 2 / -1;
+    grid-template-columns: minmax(0, 1fr) 58px;
+    padding-bottom: 6px;
+  }
+  .share-finding {
+    font-size: 12px;
+  }
+}

@@ -60,7 +60,8 @@ async function analyse(request: AnalysisRequest, current: number) {
     // A fast first pass on every new program, so a drag reshapes the
     // distribution at once. Its runs are the first runs of the refined pass.
     let started = performance.now();
-    const preview = reusable ?? propagate(request.source, result, inputs, PREVIEW_RUNS, seed, program);
+    const preview =
+      reusable ?? propagate(request.source, result, inputs, PREVIEW_RUNS, seed, program);
     send({
       phase: 'distribution',
       id: request.id,

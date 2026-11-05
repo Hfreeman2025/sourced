@@ -59,7 +59,12 @@ export function summarise(values: Float64Array): { summary: Summary; sorted: Flo
 }
 
 /** Equal-width bins over [low, high]. Values on the upper edge fall in the last bin. */
-export function histogram(sorted: Float64Array, bins: number, low: number, high: number): Histogram {
+export function histogram(
+  sorted: Float64Array,
+  bins: number,
+  low: number,
+  high: number,
+): Histogram {
   const counts = new Array<number>(bins).fill(0);
   let below = 0,
     above = 0;

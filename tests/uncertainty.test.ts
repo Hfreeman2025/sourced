@@ -25,9 +25,11 @@ const firstNumber = (source: string) => {
   return statement.value;
 };
 const compiled = (source: string): Evaluation =>
-  runInNewContext(`(function(rt) { ${compile(parse(source))} })`, {}, { timeout: 1000 })(
-    createRuntime(),
-  );
+  runInNewContext(
+    `(function(rt) { ${compile(parse(source))} })`,
+    {},
+    { timeout: 1000 },
+  )(createRuntime());
 
 test('every spread form parses with exact spans and its provenance', () => {
   const cases: [string, string, Record<string, unknown>][] = [
@@ -51,12 +53,19 @@ test('every spread form parses with exact spans and its provenance', () => {
       const actual = spreadNode[key];
       if (typeof expected === 'object' && expected)
         for (const [field, value] of Object.entries(expected))
-          assert.equal((actual as Record<string, unknown>)[field], value, `${spread} ${key}.${field}`);
+          assert.equal(
+            (actual as Record<string, unknown>)[field],
+            value,
+            `${spread} ${key}.${field}`,
+          );
       else assert.equal(actual, expected);
     }
     const at = source.indexOf('~');
     assert.equal(literal.uncertainty?.start, at);
-    assert.equal(source.slice(literal.uncertainty?.spread.start, literal.uncertainty?.spread.end), spread);
+    assert.equal(
+      source.slice(literal.uncertainty?.spread.start, literal.uncertainty?.spread.end),
+      spread,
+    );
     assert.equal(literal.end, source.length, 'the literal span includes its uncertainty');
   }
   const assumed = firstNumber('let x = 70 kg @s ~ ±5% assumed');
@@ -72,13 +81,21 @@ test('uncertainty errors explain the mistake at its exact span', () => {
     ['assume t = 70 kg ~ ±5%', 'Uncertainty needs a source', ''],
     ['assume t = 70 kg ~ ±5% @nowhere', 'Unknown source', '@nowhere'],
     ['assume t = 70 kg ~ lognormal(0.9) assumed', 'A factor above 1 belongs here', '0.9'],
-    ['assume t = 0 kg ~ lognormal(1.2) assumed', 'Lognormal needs a positive value', 'lognormal(1.2)'],
+    [
+      'assume t = 0 kg ~ lognormal(1.2) assumed',
+      'Lognormal needs a positive value',
+      'lognormal(1.2)',
+    ],
     ['assume t = 0 kg ~ ±5% assumed', 'A percentage of zero', '5%'],
     ['assume t = 70 kg ~ ±0 kg assumed', 'The spread must be positive', '0 kg'],
     ['assume t = 70 kg ~ 40% 60..80 assumed', 'Coverage out of range', '40%'],
     ['assume t = 70 kg ~ banana assumed', 'Unknown uncertainty', 'banana'],
     ['assume t = 70 kg ~ 60 assumed', 'Unfinished range', 'assumed'],
-    ['assume t = 70 kg\nprint "t: {round(t, 2 ~ ±1 assumed)}"', 'Invalid rounding precision', '~ ±1 assumed'],
+    [
+      'assume t = 70 kg\nprint "t: {round(t, 2 ~ ±1 assumed)}"',
+      'Invalid rounding precision',
+      '~ ±1 assumed',
+    ],
   ] as const;
   for (const [source, title, span] of diagnostics) {
     const result = run(source);
@@ -88,13 +105,25 @@ test('uncertainty errors explain the mistake at its exact span', () => {
     assert.deepEqual(result.outputs, [], 'no stale result survives an invalid spread');
   }
   assert.equal(
-    formatDiagnostic('assume t = 70 kg ~ 80..100 assumed', run('assume t = 70 kg ~ 80..100 assumed').diagnostics[0] ?? { start: 0, end: 0, title: '', message: '', hint: '' }),
+    formatDiagnostic(
+      'assume t = 70 kg ~ 80..100 assumed',
+      run('assume t = 70 kg ~ 80..100 assumed').diagnostics[0] ?? {
+        start: 0,
+        end: 0,
+        title: '',
+        message: '',
+        hint: '',
+      },
+    ),
     'The range excludes the value at 1:20\n1 | assume t = 70 kg ~ 80..100 assumed\n                       ^^^^^^^\n80..100 kg doesn’t contain 70 kg.\nWiden the range, or move the value inside it.',
   );
 });
 
 test('a cited spread needs a declared source; an assumed spread on a cited value is allowed', () => {
-  assert.equal(run('source a = "A"\nlet x = 2 kg @a ~ ±5% @b').diagnostics[0]?.title, 'Unknown source');
+  assert.equal(
+    run('source a = "A"\nlet x = 2 kg @a ~ ±5% @b').diagnostics[0]?.title,
+    'Unknown source',
+  );
   const mixed = run('source a = "A"\nlet x = 2 kg @a ~ ±5% assumed\nprint "x: {x}"');
   assert.deepEqual(mixed.diagnostics, []);
   const node = mixed.nodes.find((n) => n.uncertainty);
@@ -145,7 +174,10 @@ test('spread literals are draggable but never perturbed as data inputs', () => {
   const pair = collectInputs('assume x = sum([1 kg ~ ±1 kg assumed, 2 kg])').filter(
     (input) => input.role === 'value',
   );
-  assert.deepEqual(pair.map((input) => input.label), ['x', 'x [2]']);
+  assert.deepEqual(
+    pair.map((input) => input.label),
+    ['x', 'x [2]'],
+  );
 });
 
 test('fast column rounding equals the interpreter rounding, including ties', () => {
@@ -160,7 +192,10 @@ test('fast column rounding equals the interpreter rounding, including ties', () 
     const fast = roundColumn(Float64Array.from(values), places);
     values.forEach((value, i) => {
       const exact = roundAmount(value, places);
-      assert.ok(Object.is(fast[i], exact) || (fast[i] === 0 && exact === 0), `${value} at ${places}`);
+      assert.ok(
+        Object.is(fast[i], exact) || (fast[i] === 0 && exact === 0),
+        `${value} at ${places}`,
+      );
     });
   }
 });
@@ -197,26 +232,40 @@ test('the column evaluator reproduces the scalar interpreter bit for bit on ever
     inputs.forEach((input) => {
       const u = fillUniform(new Float64Array(runs), 9, input.id);
       // Draw each run's value within ±30% of the literal; keep run 0 central.
-      columns.set(input.literal.start, u.map((x, j) => (j ? input.value * (0.7 + 0.6 * x) : input.value)));
+      columns.set(
+        input.literal.start,
+        u.map((x, j) => (j ? input.value * (0.7 + 0.6 * x) : input.value)),
+      );
     });
     // Signed literals: the column holds the unsigned literal; unary minus applies.
     for (const input of inputs)
       if (input.value < 0) {
         const column = columns.get(input.literal.start);
-        if (column) columns.set(input.literal.start, column.map((x) => -x));
+        if (column)
+          columns.set(
+            input.literal.start,
+            column.map((x) => -x),
+          );
       }
     const evaluation = evaluateColumns(program, columns, runs);
     for (let j = 0; j < runs; j++) {
       let changed = source;
       for (const input of [...inputs].reverse())
-        changed = replaceInput(changed, input, (columns.get(input.literal.start)?.[j] ?? 0) * Math.sign(input.value || 1));
+        changed = replaceInput(
+          changed,
+          input,
+          (columns.get(input.literal.start)?.[j] ?? 0) * Math.sign(input.value || 1),
+        );
       const scalar = run(changed);
       assert.deepEqual(scalar.diagnostics, [], `${item.id} run ${j}`);
       scalar.outputs.forEach((output, i) => {
         const column = evaluation.outputs[i];
         const lane = column?.lane;
         const value = typeof lane === 'number' ? lane : lane?.[j];
-        assert.ok(Object.is(value, output.value?.amount), `${item.id} output ${i} run ${j}: ${value} vs ${output.value?.amount}`);
+        assert.ok(
+          Object.is(value, output.value?.amount),
+          `${item.id} output ${i} run ${j}: ${value} vs ${output.value?.amount}`,
+        );
         assert.equal(column?.unit.symbol, output.value?.unit.symbol);
       });
     }
@@ -302,7 +351,8 @@ test('seeds are deterministic; the scrub preview is a prefix of the refined run'
   assert.ok(Math.abs((a.outputs[0]?.summary?.p50 ?? 0) - (c.outputs[0]?.summary?.p50 ?? 0)) < 0.5);
   const preview = sampleInputs(inputs, PREVIEW_RUNS, 1),
     full = sampleInputs(inputs, MONTE_CARLO_RUNS, 1);
-  for (const [key, column] of preview) assert.deepEqual(column, full.get(key)?.subarray(0, PREVIEW_RUNS));
+  for (const [key, column] of preview)
+    assert.deepEqual(column, full.get(key)?.subarray(0, PREVIEW_RUNS));
 });
 
 test('dragging one quantity leaves every other quantity’s random numbers unchanged', () => {
@@ -370,7 +420,10 @@ test('review: each output excludes only the runs where its own calculation fails
   const source = 'assume x = 1 ~ normal(1) assumed\nprint "x: {x}"\nprint "root: {sqrt(x)}"';
   const [x, root] = propagate(source, run(source), collectInputs(source)).outputs;
   assert.equal(x?.undefinedRuns, 0, 'x itself never fails');
-  assert.ok(Math.abs((x?.summary?.mean ?? 0) - 1) < 0.01, `x keeps its stated mean: ${x?.summary?.mean}`);
+  assert.ok(
+    Math.abs((x?.summary?.mean ?? 0) - 1) < 0.01,
+    `x keeps its stated mean: ${x?.summary?.mean}`,
+  );
   // P(x < 0) = Φ(−1) = 0.1587; binomial standard error ≈ 0.0012.
   assert.ok(Math.abs((root?.undefinedRuns ?? 0) / MONTE_CARLO_RUNS - 0.1587) < 0.005);
 });
@@ -393,7 +446,11 @@ test('review: a unit written right before .. is a unit, not part of a dotted nam
 test('review: a spread on a negative literal describes the signed quantity', () => {
   const valid = run('assume t = -5 kg ~ -6..-4 assumed\nprint "t: {t}"');
   assert.deepEqual(valid.diagnostics, []);
-  assert.deepEqual(valid.nodes[0]?.uncertainty?.distribution, { kind: 'uniform', low: -6, high: -4 });
+  assert.deepEqual(valid.nodes[0]?.uncertainty?.distribution, {
+    kind: 'uniform',
+    low: -6,
+    high: -4,
+  });
   assert.equal(
     run('assume t = -5 kg ~ 4..6 assumed\nprint "t: {t}"').diagnostics[0]?.title,
     'The range excludes the value',

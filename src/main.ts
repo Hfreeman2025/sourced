@@ -9,9 +9,19 @@ import { examples } from './examples';
 import { createEditor } from './ui/editor';
 import { element, button, required } from './ui/dom';
 import { renderLineage } from './ui/lineage';
-import { percent, renderSensitivity, type ShareState } from './ui/sensitivity';
+import { showSensitivity } from './ui/sensitivity-panel';
 import { createResultView } from './ui/results';
 import { reference } from './ui/reference';
+import { createAdjustBar } from './ui/adjust';
+import {
+  announce,
+  installAnalysisTabs,
+  installCopyCode,
+  installDialogs,
+  installExampleChooser,
+  installNetworkStatus,
+} from './ui/chrome';
+import { spreadsFor } from './analysis/spreads';
 import { decimalsFor, formatAt, intervalLine, renderDistribution } from './ui/distribution';
 import { contributingInputs, type SensitivityRow } from './analysis/sensitivity';
 import {
@@ -23,15 +33,10 @@ import {
 } from './analysis/montecarlo';
 performance.mark('sourced-module-ready');
 import type { Span } from './lang/types';
-const exampleTabs = required('#examples', HTMLDivElement),
-  exampleSelect = required('#example-select', HTMLSelectElement);
-const inputSelect = required('#input-select', HTMLSelectElement),
-  quantityInput = required('#quantity-input', HTMLInputElement);
 const baseline = examples.map((example) => run(example.code)),
   drafts = new Map<string, string>();
 let exampleIndex = 0,
   outputIndex = 0,
-  selectedInput = '',
   source = examples[0]?.code ?? '',
   inputs: InputLiteral[] = [],
   traces: Span[][] = [],
@@ -54,18 +59,17 @@ let seed = DEFAULT_SEED,
   tornado: { id: number; rows: SensitivityRow[]; total: number } | undefined;
 performance.mark('sourced-examples-checked');
 const resultView = createResultView(selectOutput, traceOutput);
+const adjust = createAdjustBar({
+  reveal: (input) => editor.reveal(input),
+  apply: (input, value) => editor.setCode(replaceInput(source, input, value)),
+});
 required('#editor', HTMLDivElement).replaceChildren();
 const editor = createEditor(
   required('#editor', HTMLDivElement),
   source,
   (changed) => {
     source = changed;
-    if (worker && !failed) {
-      document.body.classList.add('analysis-pending');
-      required('#check-status', HTMLSpanElement).textContent = 'Checking…';
-      required('#result-state', HTMLSpanElement).textContent = 'Checking · previous values';
-      required('#sensitivity-status', HTMLSpanElement).textContent = 'Recomputing perturbations…';
-    }
+    if (worker && !failed) showPending(true);
     const example = examples[exampleIndex];
     if (example) drafts.set(example.id, source);
     traces = [];
@@ -80,7 +84,7 @@ const editor = createEditor(
   () => requestAnalysis(),
   {
     select(input) {
-      selectedInput = input.id;
+      adjust.choose(input.id);
       updateInputs(collectInputs(source));
     },
     gesture(active, input, value) {
@@ -93,12 +97,14 @@ const editor = createEditor(
   },
 );
 performance.mark('sourced-editor-ready');
-function announce(message: string) {
-  const toast = required('#toast', HTMLSpanElement);
-  toast.textContent = message;
-  toast.title = message;
-  toast.classList.add('visible');
-  setTimeout(() => toast.classList.remove('visible'), 1800);
+/** Marks the panels as rechecking; earlier values stay on screen, dimmed. */
+function showPending(previous: boolean) {
+  document.body.classList.add('analysis-pending');
+  required('#check-status', HTMLSpanElement).textContent = 'Checking…';
+  required('#result-state', HTMLSpanElement).textContent = previous
+    ? 'Checking · previous values'
+    : 'Checking calculation';
+  required('#sensitivity-status', HTMLSpanElement).textContent = 'Recomputing perturbations…';
 }
 function setEditState() {
   const changed = source !== examples[exampleIndex]?.code;
@@ -172,12 +178,7 @@ function requestAnalysis() {
   if (!performance.getEntriesByName('sourced-analysis-requested').length)
     performance.mark('sourced-analysis-requested');
   analysisSource = source;
-  document.body.classList.add('analysis-pending');
-  required('#check-status', HTMLSpanElement).textContent = 'Checking…';
-  required('#result-state', HTMLSpanElement).textContent = result.outputs.length
-    ? 'Checking · previous values'
-    : 'Checking calculation';
-  required('#sensitivity-status', HTMLSpanElement).textContent = 'Recomputing perturbations…';
+  showPending(result.outputs.length > 0);
   worker.postMessage({
     id,
     source,
@@ -247,17 +248,6 @@ function receive(message: AnalysisResponse) {
   }
   publishResult(message.result, message.inputs, message.traces);
 }
-/** Inputs whose declared spread reaches the selected result, by provenance. */
-function spreadsFor(index: number) {
-  const reaching = result.diagnostics.length
-    ? []
-    : contributingInputs(result, index, inputs).filter((input) => input.uncertainty);
-  return {
-    reaching,
-    cited: [...new Set(reaching.flatMap((input) => (input.uncertainty?.source ? [`@${input.uncertainty.source}`] : [])))],
-    assumed: reaching.filter((input) => !input.uncertainty?.source).map((input) => input.label),
-  };
-}
 let drawnDistribution: { key: string; propagation?: Propagation } | undefined;
 function drawDistribution() {
   const container = required('#distribution', HTMLDivElement);
@@ -304,7 +294,8 @@ function drawDistribution() {
   drawnDistribution = { key, propagation: current };
   renderDistribution(container, {
     label: output?.label ?? 'result',
-    distribution: result.diagnostics.length || !output?.value ? null : current?.outputs[outputIndex],
+    distribution:
+      result.diagnostics.length || !output?.value ? null : current?.outputs[outputIndex],
     refined: refined && !stale,
     runs: current?.runs ?? 0,
     seed: current?.seed ?? seed,
@@ -326,90 +317,28 @@ function drawDistribution() {
     },
   });
 }
-function shareFinding(state: VarianceShares, nudges: SensitivityRow[]): string | undefined {
-  if (!state.varies || !state.rows.length) return undefined;
-  const label = (id: string) => inputs.find((input) => input.id === id);
-  const ranked = [...state.rows].sort((a, b) => b.first - a.first);
-  const top = ranked[0];
-  if (!top) return undefined;
-  let cited = 0,
-    assumed = 0,
-    alone = 0;
-  for (const row of state.rows) {
-    alone += Math.max(0, row.first);
-    if (label(row.inputId)?.uncertainty?.source) cited += Math.max(0, row.first);
-    else assumed += Math.max(0, row.first);
-  }
-  const parts = [`Knowing ${label(top.inputId)?.label ?? 'the top input'} exactly would remove about ${percent(top.first)} of the variance.`];
-  const variation = `±${Math.round(Number(required('#fraction', HTMLSelectElement).value) * 100)}%`;
-  const nudged = nudges[0];
-  const largest = nudged?.impact ?? 0;
-  if (cited > 0 && assumed > 0)
-    parts.push(`Cited spreads account for ${percent(cited)}, assumed spreads ${percent(assumed)}.`);
-  else if (nudged && !nudged.input.uncertainty && largest > 0)
-    parts.push(
-      `A ${variation} nudge to ${nudged.input.label} moves the result most, but it has no declared uncertainty.`,
-    );
-  else if (nudges.length > 1 && nudges.every((row) => Math.abs(row.impact - largest) <= largest * 0.01))
-    parts.push(`Every ${variation} nudge moves the result equally; only the uncertainty differs.`);
-  const interaction = 1 - alone;
-  if (interaction >= 0.015) parts.push(`Interactions: ${percent(interaction)}.`);
-  return parts.join(' ');
-}
+/** The tornado's nudge, as the sentence above the table names it: "±10%". */
 function drawSensitivity() {
-  const output = result.outputs[outputIndex];
   if (!tornado || tornado.id !== requestId) return;
-  if (result.diagnostics.length || !output?.value) {
-    required('#sensitivity', HTMLDivElement).replaceChildren(
-      element(
-        'p',
-        'panel-empty',
-        result.diagnostics.length
-          ? 'Resolve the calculation errors to inspect sensitivity.'
-          : 'Print a quantity to analyse its contributing inputs.',
-      ),
-    );
-    required('#sensitivity-status', HTMLSpanElement).textContent = result.diagnostics.length
-      ? 'Not calculated while errors remain.'
-      : 'No numeric result to perturb.';
-    return;
-  }
-  const { reaching } = spreadsFor(outputIndex);
-  const ready = shares && sharesId === requestId ? shares : undefined;
-  const state: ShareState = !reaching.length
-    ? { status: 'none', rows: new Map(), varies: false }
-    : ready
-      ? {
-          status: 'ready',
-          rows: new Map(ready.rows.map((row) => [row.inputId, row])),
-          varies: ready.varies,
-          finding: shareFinding(ready, tornado.rows),
-        }
-      : { status: 'pending', rows: new Map(), varies: false };
-  renderSensitivity(
-    required('#sensitivity', HTMLDivElement),
-    tornado.rows,
-    output.value.unit.symbol,
-    (id) => {
-      selectedInput = id;
+  showSensitivity({
+    result,
+    outputIndex,
+    inputs,
+    tornado,
+    shares: shares && sharesId === requestId ? shares : undefined,
+    variation: `±${Math.round(Number(required('#fraction', HTMLSelectElement).value) * 100)}%`,
+    select: (id) => {
+      adjust.choose(id);
       updateInputs(inputs);
       const input = inputs.find((i) => i.id === id);
       if (input) editor.reveal(input);
-      quantityInput.focus({ preventScroll: true });
+      adjust.focus();
     },
-    (id) => {
+    highlight: (id) => {
       const input = inputs.find((i) => i.id === id);
       editor.trace(input ? [input.literal] : []);
     },
-    false,
-    state,
-  );
-  required('#sensitivity-status', HTMLSpanElement).textContent =
-    state.status === 'ready' && ready
-      ? `${tornado.total} inputs · one at a time · Sobol from ${ready.evaluations.toLocaleString('en-GB')} runs`
-      : state.status === 'pending'
-        ? `${tornado.total} inputs · one at a time · estimating variance shares…`
-        : `${tornado.total} inputs · one at a time · actual program reruns`;
+  });
 }
 function publishResult(next: RunResult, nextInputs: InputLiteral[], nextTraces: Span[][]) {
   if (!performance.getEntriesByName('sourced-data-ready').length)
@@ -450,7 +379,7 @@ function publishResult(next: RunResult, nextInputs: InputLiteral[], nextTraces: 
     outputIndex,
     original,
     source !== examples[exampleIndex]?.code,
-    spreadsFor(outputIndex),
+    spreadsFor(result, inputs, outputIndex),
   );
   updateInputs(inputs);
   drawDistribution();
@@ -489,54 +418,33 @@ function traceOutput(index: number | undefined) {
 function selectOutput(index: number) {
   outputIndex = index;
   const original = baseline[exampleIndex] ?? result;
-  resultView.render(result, index, original, source !== examples[exampleIndex]?.code, spreadsFor(index));
+  resultView.render(
+    result,
+    index,
+    original,
+    source !== examples[exampleIndex]?.code,
+    spreadsFor(result, inputs, index),
+  );
   drawDistribution();
   drawLineage();
   requestAnalysis();
 }
 function updateInputs(next: InputLiteral[]) {
   inputs = next;
-  if (!inputs.some((i) => i.id === selectedInput)) selectedInput = inputs[0]?.id ?? '';
-  const signature = inputs.map((i) => i.id).join('|');
-  if (inputSelect.dataset.signature !== signature) {
-    inputSelect.replaceChildren(
-      ...inputs.map((input) => {
-        const option = element('option', '', input.label);
-        option.value = input.id;
-        return option;
-      }),
-    );
-    inputSelect.dataset.signature = signature;
-  }
-  inputSelect.value = selectedInput;
-  const input = inputs.find((i) => i.id === selectedInput);
-  quantityInput.disabled = !input;
-  inputSelect.disabled = !input;
-  if (input) {
-    if (document.activeElement !== quantityInput) quantityInput.value = String(input.value);
-    quantityInput.step = String(input.step);
-    required('#input-unit', HTMLSpanElement).textContent = input.unit || 'ratio';
-  } else {
-    quantityInput.value = '';
-    required('#input-unit', HTMLSpanElement).textContent = '';
-  }
+  adjust.show(next);
 }
 function setExample(index: number) {
   const example = examples[index];
   if (!example) return;
   exampleIndex = index;
   outputIndex = 0;
-  selectedInput = '';
+  adjust.choose('');
   traceIndex = undefined;
   propagation = undefined;
   propagationSource = '';
   shares = undefined;
   source = drafts.get(example.id) ?? example.code;
-  exampleTabs.querySelectorAll('button').forEach((tab, i) => {
-    tab.setAttribute('aria-selected', String(i === index));
-    tab.tabIndex = i === index ? 0 : -1;
-  });
-  exampleSelect.value = String(index);
+  chooser.mark(index);
   required('#filename', HTMLSpanElement).textContent = example.filename;
   required('#example-note', HTMLSpanElement).textContent = example.note;
   editor.load(source);
@@ -544,57 +452,10 @@ function setExample(index: number) {
   updateInputs(collectInputs(source));
   requestAnalysis();
 }
-examples.forEach((example, index) => {
-  const tab = button(example.title, 'example-tab', () => setExample(index));
-  tab.setAttribute('role', 'tab');
-  tab.setAttribute('aria-controls', 'workbench');
-  tab.addEventListener('keydown', (event) => {
-    if (!['ArrowLeft', 'ArrowRight', 'Home', 'End'].includes(event.key)) return;
-    event.preventDefault();
-    const next =
-      event.key === 'Home'
-        ? 0
-        : event.key === 'End'
-          ? examples.length - 1
-          : (index + (event.key === 'ArrowRight' ? 1 : -1) + examples.length) % examples.length;
-    setExample(next);
-    exampleTabs.querySelectorAll('button')[next]?.focus();
-  });
-  exampleTabs.append(tab);
-  const option = element('option', '', example.title);
-  option.value = String(index);
-  exampleSelect.append(option);
-});
-exampleSelect.addEventListener('change', () => setExample(Number(exampleSelect.value)));
-inputSelect.addEventListener('change', () => {
-  selectedInput = inputSelect.value;
-  updateInputs(inputs);
-  const input = inputs.find((i) => i.id === selectedInput);
-  if (input) editor.reveal(input);
-});
-required('#adjust-form', HTMLFormElement).addEventListener('submit', (event) => {
-  event.preventDefault();
-  quantityInput.blur();
-});
-quantityInput.addEventListener('input', () => {
-  const input = inputs.find((i) => i.id === selectedInput);
-  const value = quantityInput.valueAsNumber;
-  const valid = Number.isFinite(value);
-  quantityInput.setAttribute('aria-invalid', String(!valid));
-  required('#quantity-error', HTMLSpanElement).textContent = valid ? '' : 'Enter a finite value.';
-  if (input && valid) editor.setCode(replaceInput(source, input, value));
-});
-quantityInput.addEventListener('blur', () => {
-  if (!Number.isFinite(quantityInput.valueAsNumber)) updateInputs(inputs);
-});
-quantityInput.addEventListener('keydown', (event) => {
-  if (event.key === 'Escape') {
-    quantityInput.value = String(inputs.find((i) => i.id === selectedInput)?.value ?? '');
-    quantityInput.removeAttribute('aria-invalid');
-    required('#quantity-error', HTMLSpanElement).textContent = '';
-    quantityInput.blur();
-  }
-});
+const chooser = installExampleChooser(
+  examples.map((example) => example.title),
+  setExample,
+);
 required('#fraction', HTMLSelectElement).addEventListener('change', requestAnalysis);
 required('#reset-code', HTMLButtonElement).addEventListener('click', () => {
   const example = examples[exampleIndex];
@@ -605,71 +466,18 @@ required('#reset-code', HTMLButtonElement).addEventListener('click', () => {
   setEditState();
   requestAnalysis();
 });
-required('#copy-code', HTMLButtonElement).addEventListener('click', () => {
-  if (!navigator.clipboard) {
-    announce('Select the code to copy it; clipboard access is unavailable.');
-    return;
-  }
-  navigator.clipboard
-    .writeText(source)
-    .then(() => announce('Code copied.'))
-    .catch(() => announce('Clipboard unavailable. Select the code to copy it.'));
-});
-const guide = required('#guide-dialog', HTMLDialogElement),
-  javascript = required('#js-dialog', HTMLDialogElement);
-required('#reference', HTMLDivElement).innerHTML = reference;
-required('#guide-open', HTMLButtonElement).addEventListener('click', () => guide.showModal());
-required('#js-open', HTMLButtonElement).addEventListener('click', () => {
-  required('#compiled-code', HTMLPreElement).textContent = result.diagnostics.length
+installCopyCode(() => source);
+installDialogs(reference, () =>
+  result.diagnostics.length
     ? 'Resolve the errors before compiling JavaScript.'
-    : compile(parse(source));
-  javascript.showModal();
-});
-for (const dialog of [guide, javascript]) {
-  dialog.querySelector('.dialog-close')?.addEventListener('click', () => dialog.close());
-  dialog.addEventListener('click', (event) => {
-    if (event.target !== dialog) return;
-    const r = dialog.getBoundingClientRect();
-    if (
-      event.clientX < r.left ||
-      event.clientX > r.right ||
-      event.clientY < r.top ||
-      event.clientY > r.bottom
-    )
-      dialog.close();
-  });
-}
-function analysisTab(lineage: boolean) {
-  document.body.classList.toggle('show-lineage', lineage);
-  required('#sensitivity-tab', HTMLButtonElement).setAttribute('aria-selected', String(!lineage));
-  required('#lineage-tab', HTMLButtonElement).setAttribute('aria-selected', String(lineage));
-}
-required('#sensitivity-tab', HTMLButtonElement).addEventListener('click', () => analysisTab(false));
-required('#lineage-tab', HTMLButtonElement).addEventListener('click', () => analysisTab(true));
-for (const id of ['sensitivity-tab', 'lineage-tab'])
-  required(`#${id}`, HTMLButtonElement).addEventListener('keydown', (event) => {
-    if (event.key === 'ArrowLeft' || event.key === 'ArrowRight') {
-      event.preventDefault();
-      analysisTab(id === 'sensitivity-tab');
-      required(
-        id === 'sensitivity-tab' ? '#lineage-tab' : '#sensitivity-tab',
-        HTMLButtonElement,
-      ).focus();
-    }
-  });
-function networkStatus() {
-  document.body.classList.toggle('offline', !navigator.onLine);
-  required('#network-status', HTMLSpanElement).textContent = navigator.onLine
-    ? 'Local calculation'
-    : 'Offline · calculations available';
-}
-window.addEventListener('online', networkStatus);
-window.addEventListener('offline', networkStatus);
-networkStatus();
+    : compile(parse(source)),
+);
+installAnalysisTabs();
+installNetworkStatus();
 document.querySelectorAll<HTMLButtonElement>('.workspace button[disabled]').forEach((node) => {
   node.disabled = false;
 });
-exampleSelect.disabled = false;
+chooser.enable();
 startWorker();
 setExample(0);
 // Plex swaps in after first paint; refit the printed answer to its real width.

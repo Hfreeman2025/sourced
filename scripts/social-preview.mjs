@@ -1,5 +1,5 @@
 import { launch } from './browsers.mjs';
-import { copyFile, readFile, writeFile } from 'node:fs/promises';
+import { copyFile, mkdir, readFile, writeFile } from 'node:fs/promises';
 import assert from 'node:assert/strict';
 const browser = await launch('chromium');
 try {
@@ -22,9 +22,10 @@ try {
   assert.equal(bytes.readUInt32BE(16), 1200);
   assert.equal(bytes.readUInt32BE(20), 630);
   await copyFile('public/og.png', 'dist/og.png');
-  await copyFile('public/og.png', 'shots/v3/og.png');
+  await mkdir('shots', { recursive: true });
+  await copyFile('public/og.png', 'shots/og.png');
   await writeFile(
-    'shots/v3/social-preview.json',
+    'shots/social-preview.json',
     `${JSON.stringify({ source: baseURL, viewport: { width: 1200, height: 630 }, method: 'Unedited screenshot of the real calculation pad: the commute opener with its 100,000-run distribution, tracing the computed result.', bytes: bytes.length }, null, 2)}\n`,
   );
   console.log('Real application social preview captured: public/og.png (1200×630).');

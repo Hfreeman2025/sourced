@@ -64,7 +64,10 @@ export function moments(dist: Distribution): { mean: number; variance: number } 
     }
     case 'triangular': {
       const { low: a, mode: c, high: b } = dist;
-      return { mean: (a + b + c) / 3, variance: (a * a + b * b + c * c - a * b - a * c - b * c) / 18 };
+      return {
+        mean: (a + b + c) / 3,
+        variance: (a * a + b * b + c * c - a * b - a * c - b * c) / 18,
+      };
     }
     case 'split-normal': {
       const gap = dist.right - dist.left;
@@ -99,9 +102,7 @@ export function density(dist: Distribution, x: number): number {
       return sd > 0 ? Math.exp(-(((x - dist.mode) / sd) ** 2) / 2) : x === dist.mode ? 1 : 0;
     }
     case 'lognormal':
-      return x > 0
-        ? Math.exp(-((Math.log(x / dist.median) / dist.sigma) ** 2) / 2) / x
-        : 0;
+      return x > 0 ? Math.exp(-((Math.log(x / dist.median) / dist.sigma) ** 2) / 2) / x : 0;
     case 'triangular':
       if (x < dist.low || x > dist.high) return 0;
       return x <= dist.mode

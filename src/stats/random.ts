@@ -6,7 +6,7 @@
  * names still start from unrelated states. Math.imul keeps every step exact. */
 const rotl = (x: number, k: number) => (x << k) | (x >>> (32 - k));
 
-export function splitmix32(seed: number): () => number {
+function splitmix32(seed: number): () => number {
   let state = seed >>> 0;
   return () => {
     state = (state + 0x9e3779b9) >>> 0;
@@ -38,7 +38,7 @@ export function xoshiro128ss(a: number, b: number, c: number, d: number): () => 
 
 /** FNV-1a: a stable 32-bit name for a stream, so a quantity keeps its own
  * random numbers when unrelated lines are edited (common random numbers). */
-export function hashName(text: string): number {
+function hashName(text: string): number {
   let hash = 0x811c9dc5;
   for (let i = 0; i < text.length; i++) {
     hash ^= text.charCodeAt(i);

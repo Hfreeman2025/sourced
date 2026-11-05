@@ -4,7 +4,13 @@ import type { Program } from '../lang/types';
 import { fillSamples } from '../stats/distributions';
 import { fillUniform } from '../stats/random';
 import { sobolIndices } from '../stats/sobol';
-import { histogram, quantileSorted, summarise, type Histogram, type Summary } from '../stats/summary';
+import {
+  histogram,
+  quantileSorted,
+  summarise,
+  type Histogram,
+  type Summary,
+} from '../stats/summary';
 import { evaluateColumns, expand, type ColumnEvaluation } from './columns';
 import type { InputLiteral } from './inputs';
 import { contributingInputs } from './sensitivity';
@@ -13,7 +19,7 @@ export const PREVIEW_RUNS = 4_096;
 export const MONTE_CARLO_RUNS = 100_000;
 /** Base rows for Sobol estimation; the design costs base × (k + 2) runs. */
 export const SOBOL_BASE = 16_384;
-export const SOBOL_RESAMPLES = 100;
+const SOBOL_RESAMPLES = 100;
 export const DEFAULT_SEED = 1;
 
 export interface OutputDistribution {
@@ -160,7 +166,9 @@ export function varianceShares(
   seed = DEFAULT_SEED,
   program: Program = parse(source),
 ): VarianceShares {
-  const reaching = contributingInputs(result, outputIndex, inputs).filter((input) => input.uncertainty);
+  const reaching = contributingInputs(result, outputIndex, inputs).filter(
+    (input) => input.uncertainty,
+  );
   if (!reaching.length)
     return { rows: [], base, evaluations: 0, dropped: 0, resamples: 0, varies: false };
   const A = sampleInputs(reaching, base, seed, 'A'),

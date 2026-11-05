@@ -1,0 +1,31 @@
+/* Type: IBM Plex Sans Condensed for signs (the wordmark, headings and
+   labels, and the drawing's annotation lettering, as on a drafted sheet).
+   Weights stay on the files served: 500 and 600. No synthesis. */
+.heading h1 {
+  font-family: var(--signs);
+  font-weight: 600;
+  letter-spacing: -.4px;
+}
+
+.panel-heading h2,.explanation h2,.dialog-header h2,dialog h3 {
+  font-family: var(--signs);
+  font-weight: 600;
+}
+
+.dialog-header h2 {
+  letter-spacing: -.2px;
+}
+
+.answer-label,.output-option>span,.lineage-receipt dt,.tornado-axis,.adjust-bar label,
+.variation-label,.mobile-example,.share-note,.diagram-label,.diagram-scroll-hint {
+  font-family: var(--signs);
+  font-weight: 500;
+}
+
+.answer-label {
+  font-size: 14px;
+}
+
+.diagram-label {
+  letter-spacing: .1px;
+}

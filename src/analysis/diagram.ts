@@ -105,7 +105,8 @@ export function diagramLayout(result: RunResult, index: number, availableWidth =
   });
   const ordered = [...columns.entries()].sort(([a], [b]) => a - b);
   const columnWidths = ordered.map(([, column]) => Math.max(...column.map((node) => node.width)));
-  const naturalWidth = columnWidths.reduce((sum, width) => sum + width, 48) + (ordered.length - 1) * 32;
+  const naturalWidth =
+    columnWidths.reduce((sum, width) => sum + width, 48) + (ordered.length - 1) * 32;
   const width = Math.max(availableWidth, ...[...nodes.values()].map((node) => node.width + 48));
   const vertical = naturalWidth > width || maxLevel >= 5;
   const large = nodes.size > 12 || maxLevel >= 7 || leaf > 8 || width > availableWidth;
@@ -137,10 +138,14 @@ export function diagramLayout(result: RunResult, index: number, availableWidth =
       }
     }
   } else {
-    const gap = (width - 48 - columnWidths.reduce((sum, value) => sum + value, 0)) / Math.max(1, ordered.length - 1);
+    const gap =
+      (width - 48 - columnWidths.reduce((sum, value) => sum + value, 0)) /
+      Math.max(1, ordered.length - 1);
     let x = 24;
     ordered.forEach(([, column], i) => {
-      column.forEach((node) => { node.x = x; });
+      column.forEach((node) => {
+        node.x = x;
+      });
       x += (columnWidths[i] ?? 0) + gap;
     });
   }
@@ -150,6 +155,7 @@ export function diagramLayout(result: RunResult, index: number, availableWidth =
     width,
     height: Math.max(...[...nodes.values()].map((n) => n.y + 48)),
     root,
-    vertical, large,
+    vertical,
+    large,
   };
 }

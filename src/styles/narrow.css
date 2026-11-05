@@ -1,0 +1,382 @@
+@media(min-width:1500px) {
+  .workspace {
+    padding: 0 40px;
+  }
+  .cm-editor {
+    font-size: 13px;
+  }
+  .answer-value {
+    font-size: 61px;
+  }
+}
+
+@media(max-width:1150px) {
+  .workspace {
+    padding: 0 22px;
+  }
+  .heading {
+    gap: 18px;
+  }
+  .heading p {
+    font-size: 12px;
+  }
+  .masthead nav {
+    gap: 18px;
+  }
+  #network-status {
+    display: none;
+  }
+  .workbench,.analysis-grid {
+    grid-template-columns: 1.14fr 1fr;
+    gap: 14px;
+  }
+  .trace-instruction {
+    display: none;
+  }
+  .cm-editor {
+    font-size: 11px;
+  }
+  .panel-heading {
+    padding: 0 12px;
+    gap: 9px;
+  }
+  .panel-heading #filename {
+    font-size: 9px;
+  }
+  #adjust-hint {
+    display: none;
+  }
+  .answer-value {
+    font-size: 48px;
+  }
+  .tornado-row,.tornado-axis {
+    grid-template-columns: 105px 1fr 79px;
+    gap: 8px;
+  }
+  .tornado-name>span {
+    display: none;
+  }
+  .tornado-extent {
+    font-size: 9px;
+  }
+  .analysis-foot {
+    font-size: 8px;
+    padding: 7px 12px;
+  }
+  .sensitivity-body {
+    padding: 5px 12px;
+  }
+  .analysis-foot>span:first-child {
+    gap: 4px;
+  }
+  .context-strip {
+    font-size: 9px;
+  }
+  footer {
+    font-size: 9px;
+  }
+}
+
+@media(max-width:760px) {
+  .workspace {
+    padding: 0 16px;
+  }
+  .masthead {
+    height: 70px;
+  }
+  .heading {
+    display: block;
+  }
+  .heading h1 {
+    font-size: 23px;
+  }
+  .heading p {
+    font-size: 11px;
+    margin-top: 5px;
+  }
+  .masthead nav {
+    gap: 16px;
+    font-size: 11px;
+  }
+  .masthead nav .text-button {
+    font-size: 11px;
+  }
+  #examples {
+    gap: 20px;
+  }
+  .example-bar {
+    height: 52px;
+  }
+  .example-tab {
+    font-size: 11px;
+  }
+  .example-actions {
+    gap: 15px;
+  }
+  .example-actions #edit-state {
+    display: none;
+  }
+  .workbench,.analysis-grid {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+  .panel-heading {
+    height: 35px;
+  }
+  .panel-heading h2 {
+    font-size: 11px;
+  }
+  .panel-heading #filename {
+    font-size: 9px;
+  }
+  .panel-heading #check-status {
+    font-size: 9px;
+  }
+  .results .panel-heading {
+    height: 30px;
+  }
+  .results .panel-heading #result-state {
+    font-size: 9px;
+  }
+  #editor {
+    height: 235px;
+  }
+  .cm-editor {
+    font-size: 12px;
+    line-height: 20px;
+  }
+  .cm-line {
+    padding-right: 8px!important;
+  }
+  .cm-gutterElement {
+    line-height: 20px;
+  }
+  .cm-content {
+    padding-top: 7px!important;
+  }
+  .adjust-bar {
+    height: 40px;
+    font-size: 10px;
+    padding: 0 10px;
+    gap: 7px;
+  }
+  .adjust-bar select {
+    width: 100px;
+    font-size: 10px;
+  }
+  .adjust-bar input {
+    height: 25px;
+    width: 85px;
+    font-size: 12px;
+  }
+  .adjust-bar label {
+    font-size: 10px;
+  }
+  #input-unit {
+    font-size: 10px;
+  }
+  .answer {
+    height: 101px;
+    padding: 11px 15px 8px;
+  }
+  .answer-label {
+    font-size: 11px;
+    max-height: 29px;
+  }
+  .answer-value {
+    font-size: 39px;
+    letter-spacing: -2px;
+    line-height: 1.15;
+    margin-top: 5px;
+  }
+  #outputs {
+    margin: 0 15px;
+    min-height: 49px;
+  }
+  .output-option {
+    padding: 8px 9px;
+  }
+  .output-option>span {
+    font-size: 9px;
+    margin-bottom: 4px;
+  }
+  .output-option strong {
+    font-size: 11px;
+  }
+  .result-detail {
+    min-height: 38px;
+    padding: 7px 15px;
+    gap: 3px;
+    flex-direction: row;
+    font-size: 9px;
+  }
+  .result-detail .result-receipt {
+    font-size: 9px;
+  }
+  .scenario-comparison {
+    font-size: 9px;
+  }
+  .scenario-note {
+    font-size: 8px;
+    max-width: 140px;
+  }
+  .analysis-tabs {
+    display: flex;
+    border-bottom: 1px solid #b6bfc9;
+    margin-top: 16px;
+    gap: 27px;
+  }
+  .analysis-tabs button {
+    border: 0;
+    border-bottom: 2px solid transparent;
+    font-size: 12px;
+    padding: 0 0 10px;
+  }
+  .analysis-tabs button[aria-selected=true] {
+    border-bottom-color: var(--blue);
+    color: var(--blue);
+  }
+  .analysis-grid {
+    margin-top: 10px;
+  }
+  .analysis-grid .panel {
+    height: 299px;
+  }
+  .lineage-panel {
+    display: none;
+  }
+  .show-lineage .lineage-panel {
+    display: block;
+  }
+  .show-lineage .sensitivity-panel {
+    display: none;
+  }
+  .analysis-grid .panel-heading {
+    height: 35px;
+  }
+  .sensitivity-body {
+    height: 220px;
+    padding: 3px 12px;
+  }
+  .tornado-row {
+    height: 31px;
+    grid-template-columns: 94px 1fr 76px;
+    gap: 7px;
+  }
+  .tornado-axis {
+    height: 22px;
+    grid-template-columns: 94px 1fr 76px;
+    gap: 7px;
+  }
+  .tornado-name strong {
+    font-size: 10px;
+  }
+  .tornado-extent {
+    font-size: 9px;
+  }
+  .tornado-bar {
+    top: 9px;
+    height: 12px;
+  }
+  .variation-label {
+    font-size: 9px;
+    gap: 5px;
+  }
+  .variation-label select {
+    font-size: 10px;
+  }
+  .analysis-grid .panel-heading>span {
+    font-size: 9px;
+  }
+  .analysis-foot {
+    min-height: 42px;
+    font-size: 8px;
+    gap: 6px;
+    padding: 7px 12px;
+    align-items: center;
+  }
+  .analysis-foot>span:last-child {
+    text-align: right;
+  }
+  .diagram-viewport {
+    height: 188px;
+  }
+  .diagram-detail {
+    height: 75px;
+  }
+  .diagram-controls {
+    top: 149px;
+  }
+  .diagram-direction {
+    font-size: 9px!important;
+  }
+  .technical-diagram {
+    min-width: 650px;
+  }
+  .context-strip {
+    padding: 11px 0;
+    flex-direction: column;
+    gap: 5px;
+    font-size: 9px;
+  }
+  .context-strip>span:last-child {
+    text-align: left;
+  }
+  .explanation {
+    grid-template-columns: 1fr;
+    padding: 23px 0;
+    gap: 20px;
+  }
+  .explanation h2 {
+    font-size: 12px;
+  }
+  .explanation p {
+    font-size: 11px;
+  }
+  footer {
+    font-size: 9px;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  footer span:last-child {
+    display: none;
+  }
+  .answer.empty-answer h3 {
+    font-size: 17px;
+    margin: 3px 0 7px;
+  }
+  .answer.empty-answer p {
+    font-size: 11px;
+    line-height: 1.5;
+  }
+  .error-hint {
+    font-size: 10px;
+  }
+  .result-detail:has(.error-hint) {
+    min-height: 70px;
+    line-height: 1.7;
+  }
+  .panel-empty {
+    font-size: 11px;
+    padding: 14px 12px;
+  }
+  .example-actions .text-button {
+    font-size: 10px;
+  }
+  .dialog-header h2 {
+    font-size: 20px;
+  }
+  dialog {
+    padding: 18px;
+  }
+  dialog p {
+    font-size: 12px;
+  }
+  dialog pre {
+    font-size: 10px;
+  }
+  #gesture-feedback {
+    font-size: 11px;
+    padding: 8px 10px;
+  }
+}

@@ -6,22 +6,27 @@
   "description": "A tiny language where every number carries its source.",
   "license": "MIT",
   "author": "Harry Freeman",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Hfreeman2025/sourced"
+  },
   "scripts": {
     "dev": "vite --host 127.0.0.1",
     "build": "tsc --noEmit && vite build",
     "preview": "vite preview --host 127.0.0.1",
     "typecheck": "tsc --noEmit",
     "lint": "biome lint src tests scripts",
+    "format": "biome format --write src tests scripts",
+    "format:check": "biome format src tests scripts",
     "test": "tsx --test tests/*.test.ts",
     "licenses": "node scripts/licenses.mjs",
-    "check": "npm run typecheck && npm run lint && npm test && npm run build && npm run licenses",
+    "check": "npm run typecheck && npm run lint && npm run format:check && npm test && npm run build && npm run licenses",
     "measure": "tsx scripts/measure.ts",
     "test:browser": "node scripts/browser-check.mjs",
     "test:layout": "node scripts/layout-check.mjs",
     "test:contrast": "node scripts/contrast-check.mjs",
     "measure:browser": "node scripts/performance.mjs",
-    "test:shift": "node scripts/shift-check.mjs",
-    "refresh:dev": "node scripts/refresh-dev.mjs"
+    "test:shift": "node scripts/shift-check.mjs"
   },
   "dependencies": {
     "@codemirror/autocomplete": "6.20.0",

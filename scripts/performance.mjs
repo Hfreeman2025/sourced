@@ -4,7 +4,7 @@ import { readdir, readFile, writeFile, mkdir } from 'node:fs/promises';
 import { gzipSync } from 'node:zlib';
 import { launch } from './browsers.mjs';
 const baseURL = process.env.SOURCED_URL ?? 'http://127.0.0.1:4177';
-const evidence = process.env.SOURCED_MEASUREMENT_DIR ?? 'shots/v3';
+const evidence = process.env.SOURCED_MEASUREMENT_DIR ?? 'shots/performance';
 await mkdir(evidence, { recursive: true });
 const assets = [];
 for (const name of await readdir('dist/assets'))
@@ -36,7 +36,7 @@ for (const name of (process.env.SOURCED_BROWSERS ?? 'chromium,webkit,firefox').s
     await page.waitForFunction(
       () => performance.getEntriesByName('sourced-meaningful-paint').length > 0,
     );
-    // v3: the opener's 100,000-run distribution and its Sobol shares.
+    // The opener's 100,000-run distribution and its Sobol shares.
     await page.waitForFunction(() => performance.getEntriesByName('sourced-shares').length > 0);
     const opening = await page.evaluate(() => {
       const first = (name) => performance.getEntriesByName(name)[0];

@@ -11,6 +11,9 @@ dist-next/
 .cache/
 .vite/
 coverage/
+
+# Test output: suite screenshots, reports and measurements (docs/screens holds the ones the README uses)
+shots/
 test-results/
 playwright-report/
 blob-report/

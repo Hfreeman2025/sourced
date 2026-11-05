@@ -30,7 +30,8 @@ export function lex(input: string, offset = 0): { tokens: Token[]; diagnostics: 
     if (/[a-zA-Z_Ω]/.test(c)) {
       // A dot joins name parts (invoice.march) only when a name character
       // follows, so `4 km..6 km` is a unit, a range and a unit.
-      const text = /^[a-zA-Z_Ω](?:[a-zA-Z0-9_Ω]|\.(?=[a-zA-Z0-9_Ω]))*/.exec(input.slice(i))?.[0] ?? c;
+      const text =
+        /^[a-zA-Z_Ω](?:[a-zA-Z0-9_Ω]|\.(?=[a-zA-Z0-9_Ω]))*/.exec(input.slice(i))?.[0] ?? c;
       i += text.length;
       push('id', text, start, i);
       continue;

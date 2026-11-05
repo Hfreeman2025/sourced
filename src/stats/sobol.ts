@@ -117,7 +117,8 @@ export function sobolIndices(
   const { terms, width, k } = rowTerms(valid, a, b, ab);
   const rows = valid.length,
     sums = new Float64Array(width);
-  for (let r = 0; r < rows; r++) for (let m = 0; m < width; m++) sums[m] = (sums[m] ?? 0) + (terms[r * width + m] ?? 0);
+  for (let r = 0; r < rows; r++)
+    for (let m = 0; m < width; m++) sums[m] = (sums[m] ?? 0) + (terms[r * width + m] ?? 0);
   const point = indices(sums, rows, k);
   // Relative to the output's own magnitude (now 1), a variance this small is
   // floating-point noise (for example, every run rounded to one value).

@@ -7,7 +7,7 @@ permissions:
 jobs:
   check:
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 45
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
       - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
@@ -15,17 +15,20 @@ jobs:
           node-version: 22
           cache: npm
       - run: npm ci --ignore-scripts
+      # Typecheck, lint, formatting, unit tests, production build and licence check.
       - run: npm run check
       - run: npm audit --audit-level=moderate --registry=https://registry.npmjs.org
       - name: Install cross-browser test engines
         run: PLAYWRIGHT_BROWSERS_PATH="$PWD/.cache/browsers" node node_modules/playwright/cli.js install --with-deps webkit firefox
-      - name: Browser contracts against the production build
+      # Chromium runs as the runner's installed Chrome; WebKit and Firefox use the engines above.
+      # Performance measurement (npm run measure:browser) is machine-dependent and stays local.
+      - name: Browser suites against the production build
         env:
           SOURCED_URL: http://127.0.0.1:4173
-          SOURCED_PLAYWRIGHT_PACKAGE: ${{ github.workspace }}/package.json
           SOURCED_BROWSER_CHANNEL: chrome
           PLAYWRIGHT_BROWSERS_PATH: ${{ github.workspace }}/.cache/browsers
         run: |
+          mkdir -p shots
           npm run preview -- --port 4173 --strictPort > shots/preview-server.txt 2>&1 &
           preview_pid=$!
           trap 'kill "$preview_pid"' EXIT
@@ -35,4 +38,5 @@ jobs:
           done
           npm run test:browser
           npm run test:layout
+          npm run test:shift
           npm run test:contrast

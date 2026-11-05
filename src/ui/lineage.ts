@@ -27,8 +27,11 @@ export function renderLineage(
   container.replaceChildren();
   // The inactive phone tab has no width; its grid still supplies the column's
   // width. Leave one pixel beyond the viewport padding for fractional rounding.
-  const panelWidth = () => Math.max(240,
-    (container.clientWidth || (container.closest('.analysis-grid')?.clientWidth ?? 0) - 2) - 13);
+  const panelWidth = () =>
+    Math.max(
+      240,
+      (container.clientWidth || (container.closest('.analysis-grid')?.clientWidth ?? 0) - 2) - 13,
+    );
   const availableWidth = panelWidth();
   const layout = diagramLayout(result, index, availableWidth);
   if (!layout.nodes.length) {
@@ -44,14 +47,15 @@ export function renderLineage(
     return;
   }
   const direction = container.closest('section')?.querySelector('.diagram-direction');
-  if (direction)
-    direction.textContent = layout.vertical ? 'Inputs ↓ result' : 'Inputs → result';
+  if (direction) direction.textContent = layout.vertical ? 'Inputs ↓ result' : 'Inputs → result';
   const viewport = element('div', 'diagram-viewport');
   viewport.tabIndex = 0;
   viewport.dataset.large = String(Boolean(layout.large));
-  viewport.style.height = `${layout.large
-    ? Math.min(Math.ceil(layout.height) + 17, innerWidth <= 760 ? 360 : 420)
-    : Math.ceil(layout.height) + 17}px`;
+  viewport.style.height = `${
+    layout.large
+      ? Math.min(Math.ceil(layout.height) + 17, innerWidth <= 760 ? 360 : 420)
+      : Math.ceil(layout.height) + 17
+  }px`;
   viewport.setAttribute(
     'aria-label',
     'Derivation drawing. Zoom to enlarge, then scroll to pan; select a terminal to inspect its source.',
@@ -184,12 +188,24 @@ export function renderLineage(
     // A white annotation field lifts the text off connecting wires. Every node
     // uses the same alignment, including the final operation.
     group.append(
-      svg('rect', { x: '14', y: '-28', width: String(positioned.width - 14),
-        height: leaf ? '68' : '50', class: 'diagram-annotation' }),
+      svg('rect', {
+        x: '14',
+        y: '-28',
+        width: String(positioned.width - 14),
+        height: leaf ? '68' : '50',
+        class: 'diagram-annotation',
+      }),
     );
-    if (leaf) group.append(svg('line', {
-      x1: '12', x2: '12', y1: '-24', y2: '33', class: 'terminal-bracket',
-    }));
+    if (leaf)
+      group.append(
+        svg('line', {
+          x1: '12',
+          x2: '12',
+          y1: '-24',
+          y2: '33',
+          class: 'terminal-bracket',
+        }),
+      );
     if (leaf && node.uncertainty) {
       // The input's own distribution, in miniature: it carries the shape.
       const heights = silhouette(node.uncertainty.distribution, 24);
@@ -209,17 +225,19 @@ export function renderLineage(
         }),
       );
     }
-    positioned.lines.forEach((line) => { group.append(
-      svg(
-        'text',
-        {
-          class: `diagram-${line.kind}`,
-          x: '20',
-          y: String(line.y),
-        },
-        line.text,
-      ),
-    ); });
+    positioned.lines.forEach((line) => {
+      group.append(
+        svg(
+          'text',
+          {
+            class: `diagram-${line.kind}`,
+            x: '20',
+            y: String(line.y),
+          },
+          line.text,
+        ),
+      );
+    });
     group.addEventListener('click', () => inspect(node));
     group.addEventListener('keydown', (event) => {
       if (event.key === 'Enter' || event.key === ' ') {
@@ -233,8 +251,14 @@ export function renderLineage(
   sheet.append(drawing);
   viewport.append(sheet);
   const footer = element('div', 'diagram-footer');
-  if (layout.large) container.append(element('p', 'diagram-scroll-hint',
-    'Large derivation: scroll to follow the calculation. Zoom to inspect detail.'));
+  if (layout.large)
+    container.append(
+      element(
+        'p',
+        'diagram-scroll-hint',
+        'Large derivation: scroll to follow the calculation. Zoom to inspect detail.',
+      ),
+    );
   container.append(viewport, footer);
   const controls = element('div', 'diagram-controls');
   let zoom = 1;
@@ -247,7 +271,8 @@ export function renderLineage(
   };
   const fitZoom = () => {
     const style = getComputedStyle(viewport);
-    const width = viewport.clientWidth - parseFloat(style.paddingLeft) - parseFloat(style.paddingRight);
+    const width =
+      viewport.clientWidth - parseFloat(style.paddingLeft) - parseFloat(style.paddingRight);
     // The phone's inactive tab has no dimensions. Its observer fits the drawing
     // as soon as the panel is revealed, before the first presented frame.
     if (width <= 0 || viewport.clientHeight <= 0) return undefined;
@@ -278,7 +303,10 @@ export function renderLineage(
       fit();
     }),
   );
-  controls.lastElementChild?.setAttribute('title', 'Fit at readable size; text stays at least 11px.');
+  controls.lastElementChild?.setAttribute(
+    'title',
+    'Fit at readable size; text stays at least 11px.',
+  );
   footer.append(detail, controls);
   let resizeFrame = 0;
   const observer = new ResizeObserver(() => {

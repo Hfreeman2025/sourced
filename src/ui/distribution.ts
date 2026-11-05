@@ -116,9 +116,17 @@ function drawing(width: number, d: OutputDistribution, label: string): SVGSVGEle
   // Extension lines and a chain dimension: P5 to median to P95.
   for (const position of [p5, p50, p95])
     plot.append(
-      svg('line', { x1: position, x2: position, y1: BASE + 3, y2: DIMENSION + 6, class: 'dimension-extension' }),
+      svg('line', {
+        x1: position,
+        x2: position,
+        y1: BASE + 3,
+        y2: DIMENSION + 6,
+        class: 'dimension-extension',
+      }),
     );
-  plot.append(svg('line', { x1: p5, x2: p95, y1: DIMENSION, y2: DIMENSION, class: 'dimension-line' }));
+  plot.append(
+    svg('line', { x1: p5, x2: p95, y1: DIMENSION, y2: DIMENSION, class: 'dimension-line' }),
+  );
   if (p95 - p5 > 18)
     for (const [tip, sign] of [
       [p5, 1],
@@ -169,9 +177,7 @@ function drawing(width: number, d: OutputDistribution, label: string): SVGSVGEle
     if (overlap > 0) current.left = Math.max(left, current.left - overlap);
   }
   for (const item of placed)
-    plot.append(
-      svg('text', { x: item.left, y: LABELS, class: 'distribution-value' }, item.text),
-    );
+    plot.append(svg('text', { x: item.left, y: LABELS, class: 'distribution-value' }, item.text));
   // The printed answer: a datum line at the central-input value.
   const central = x(d.central);
   const caption = `central inputs ${formatValue({ amount: d.central, unit: d.unit })}`;
@@ -272,10 +278,10 @@ export function renderDistribution(container: HTMLElement, state: DistributionSt
         `${d.undefinedRuns.toLocaleString('en-GB')} runs undefined and excluded`,
       ),
     );
-  if (state.reseed && state.refined) meta.append(button('Reseed', 'text-button reseed', state.reseed));
+  if (state.reseed && state.refined)
+    meta.append(button('Reseed', 'text-button reseed', state.reseed));
   container.append(meta);
 }
-
 
 /** The interval under the printed answer: the number and how sure it is. */
 export function intervalLine(d: OutputDistribution | null | undefined): HTMLElement | undefined {

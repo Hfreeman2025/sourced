@@ -17,7 +17,11 @@ const plain = (value: number) => Number(value.toPrecision(12)).toLocaleString('e
  * In `±` and `normal()`, a percentage is relative to the value. Elsewhere a
  * bound without a unit uses the literal's unit; a bound with a unit must have
  * the same dimensions and is converted. */
-export function resolveUncertainty(value: number, unit: string, uncertainty: Uncertainty): Distribution {
+export function resolveUncertainty(
+  value: number,
+  unit: string,
+  uncertainty: Uncertainty,
+): Distribution {
   const base = getUnit(unit, uncertainty);
   const label = unit ? ` ${unit}` : '';
   const absolute = (amount: Amount): number => {
@@ -111,7 +115,13 @@ export function resolveUncertainty(value: number, unit: string, uncertainty: Unc
           'Use the coverage your source gives, such as 95%.',
         );
       const z = inverseNormal((1 + coverage) / 2);
-      return { kind: 'split-normal', mode: value, left: (value - low) / z, right: (high - value) / z, coverage };
+      return {
+        kind: 'split-normal',
+        mode: value,
+        left: (value - low) / z,
+        right: (high - value) / z,
+        coverage,
+      };
     }
   }
 }

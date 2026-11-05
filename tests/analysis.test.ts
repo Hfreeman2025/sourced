@@ -145,23 +145,26 @@ test('diagram is a connected technical DAG with unique nodes and no column overl
     for (const a of diagram.nodes)
       for (const b of diagram.nodes)
         if (a !== b)
-          assert.ok(a.x + a.width <= b.x - 14 || b.x + b.width <= a.x - 14 ||
-            Math.abs(a.y - b.y) >= 70, 'Annotation footprints must not overlap');
+          assert.ok(
+            a.x + a.width <= b.x - 14 || b.x + b.width <= a.x - 14 || Math.abs(a.y - b.y) >= 70,
+            'Annotation footprints must not overlap',
+          );
   }
 });
 test('responsive diagrams use the available width and reserve tall readable layouts', () => {
-  for (const width of [343, 587]) for (const example of examples) {
-    const result = run(example.code);
-    for (let output = 0; output < result.outputs.length; output++) {
-      const diagram = diagramLayout(result, output, width);
-      assert.equal(diagram.width, width);
-      for (const item of diagram.nodes) {
-        assert.ok(item.x - 14 >= 0 && item.x + item.width <= width);
-        assert.ok(item.y - 28 >= 0 && item.y + 42 <= diagram.height);
+  for (const width of [343, 587])
+    for (const example of examples) {
+      const result = run(example.code);
+      for (let output = 0; output < result.outputs.length; output++) {
+        const diagram = diagramLayout(result, output, width);
+        assert.equal(diagram.width, width);
+        for (const item of diagram.nodes) {
+          assert.ok(item.x - 14 >= 0 && item.x + item.width <= width);
+          assert.ok(item.y - 28 >= 0 && item.y + 42 <= diagram.height);
+        }
+        if (example.id !== 'commute') assert.equal(diagram.large, false);
       }
-      if (example.id !== 'commute') assert.equal(diagram.large, false);
     }
-  }
 });
 test('diagram retains an assumption that adds provenance to a sourced number', () => {
   const source = 'source s = "Example"\nassume x = 2 kg @s\nprint "x: {x}"';
@@ -213,7 +216,10 @@ test('scrubbed programs still agree with compiled JavaScript in every example', 
         interpreted = run(source);
       if (interpreted.diagnostics.length) {
         // Scrubbing past a declared interval is an explicit error in both backends.
-        assert.match(interpreted.diagnostics[0]?.title ?? '', /^The range (excludes the value|is back to front)$/);
+        assert.match(
+          interpreted.diagnostics[0]?.title ?? '',
+          /^The range (excludes the value|is back to front)$/,
+        );
         assert.throws(() => compile(parse(source)), /doesn’t contain|no width/);
         continue;
       }
