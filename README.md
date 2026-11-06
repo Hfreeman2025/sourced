@@ -64,7 +64,7 @@ assume daily = 24 km ~ ±2 km assumed
 
 ## What it measures
 
-**Against closed forms** (`npm test`, 90 tests, 100,000 runs, seed 1):
+**Against closed forms** (`npm test`, 98 tests, 100,000 runs, seed 1):
 
 | Case | Result |
 | --- | --- |
@@ -98,7 +98,7 @@ No drag frame took longer than 50 ms. The JavaScript is 161 KB gzipped, includin
 - Dragging a value outside its own absolute range is an error until the range is widened; relative spreads move with the value.
 - Arithmetic is IEEE-754 double precision, not decimal. The language has no conditionals, loops, recursion or imports, by design.
 - Large derivations scroll rather than shrink below readable text.
-- The CI workflow is written for GitHub’s runners but has not yet run there; the browser results above are from local runs.
+- The browser and speed figures above are from local runs on macOS. GitHub’s CI repeats the browser suites on Linux, but not the speed measurement.
 
 ## How it was built
 

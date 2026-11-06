@@ -1,8 +1,8 @@
-import { StateEffect, StateField, Transaction } from '@codemirror/state';
+import { StateEffect, StateField } from '@codemirror/state';
 import { Decoration, EditorView, type DecorationSet } from '@codemirror/view';
-import { isolateHistory } from '@codemirror/commands';
 import { collectInputs, replaceInput, scrubValue, type InputLiteral } from '../analysis/inputs';
 import type { Span } from '../lang/types';
+import { scrubHistory } from './scrub-history';
 export const traceEffect = StateEffect.define<Span[]>();
 const marks = (source: string, trace: Span[]): DecorationSet =>
   Decoration.set(
@@ -44,7 +44,14 @@ export interface ScrubCallbacks {
 }
 export function installScrubbing(view: EditorView, callbacks: ScrubCallbacks) {
   let active:
-    | { input: InputLiteral; x: number; end: number; pointer: number; value: number }
+    | {
+        input: InputLiteral;
+        x: number;
+        end: number;
+        pointer: number;
+        value: number;
+        history: ReturnType<typeof scrubHistory>;
+      }
     | undefined;
   let frame = 0,
     pending: PointerEvent | undefined;
@@ -61,10 +68,7 @@ export function installScrubbing(view: EditorView, callbacks: ScrubCallbacks) {
     const source = view.state.doc.toString();
     const next = replaceInput(source, { ...active.input, end: active.end }, value);
     const inserted = next.slice(active.input.start, next.length - (source.length - active.end));
-    view.dispatch({
-      changes: { from: active.input.start, to: active.end, insert: inserted },
-      annotations: Transaction.addToHistory.of(false),
-    });
+    active.history.frame({ from: active.input.start, to: active.end, insert: inserted });
     active.end = active.input.start + inserted.length;
     active.value = value;
     callbacks.gesture(true, active.input, value);
@@ -76,28 +80,22 @@ export function installScrubbing(view: EditorView, callbacks: ScrubCallbacks) {
     if (!cancel) apply();
     const current = active;
     const finalToken = view.state.doc.sliceString(current.input.start, current.end);
-    if (finalToken !== current.input.raw) {
-      // Preview frames stay out of history. Restore without history, then commit
-      // one real edit so a complete gesture is one undo, regardless of duration.
-      view.dispatch({
-        changes: { from: current.input.start, to: current.end, insert: current.input.raw },
-        annotations: Transaction.addToHistory.of(false),
-      });
-      if (!cancel)
-        view.dispatch({
-          changes: {
-            from: current.input.start,
-            to: current.input.start + current.input.raw.length,
-            insert: finalToken,
-          },
-          annotations: [isolateHistory.of('full'), Transaction.userEvent.of('input.type.scrub')],
-        });
-    }
+    // A complete gesture is one undo step; a cancelled one, or one that ends on
+    // its starting value, leaves none.
+    if (cancel || finalToken === current.input.raw) {
+      // Withdrawing undoes, and an undo scrolls to the cursor; stay where the drag was.
+      const scroll = view.scrollSnapshot();
+      current.history.withdraw(
+        finalToken === current.input.raw
+          ? undefined
+          : { from: current.input.start, to: current.end, insert: current.input.raw },
+      );
+      view.dispatch({ effects: scroll });
+    } else current.history.keep();
     active = undefined;
     pending = undefined;
     if (view.dom.hasPointerCapture(current.pointer))
       view.dom.releasePointerCapture(current.pointer);
-    view.dispatch({ annotations: isolateHistory.of('after') });
     document.body.classList.remove('is-scrubbing');
     callbacks.gesture(false, current.input, cancel ? current.input.value : current.value);
   };
@@ -117,6 +115,7 @@ export function installScrubbing(view: EditorView, callbacks: ScrubCallbacks) {
       end: input.end,
       pointer: event.pointerId,
       value: input.value,
+      history: scrubHistory(view),
     };
     view.dom.setPointerCapture(event.pointerId);
     document.body.classList.add('is-scrubbing');

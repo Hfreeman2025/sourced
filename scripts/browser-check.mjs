@@ -144,8 +144,15 @@ for (const name of names) {
       await page.locator('.cm-content').focus();
       await page.keyboard.press('ControlOrMeta+z');
       await chart(4);
-      assert.match(await page.locator('.cm-content').textContent(), /284 kWh @bill/);
-      await page.keyboard.press('ControlOrMeta+Shift+z');
+      const original = await page.locator('.cm-content').textContent();
+      assert.match(original, /284 kWh @bill/);
+      // Undoing past the drag reaches Reset's step intact, with no digits left behind.
+      await page.keyboard.press('ControlOrMeta+z');
+      await chart(4);
+      assert.equal(await page.locator('.cm-content').textContent(), original);
+      // A capital Z, as a real keyboard sends with Shift; Linux binds only Ctrl-Shift-z.
+      await page.keyboard.press('ControlOrMeta+Shift+Z');
+      await page.keyboard.press('ControlOrMeta+Shift+Z');
       await chart(4);
       assert.match(await page.locator('.cm-content').textContent(), /314 kWh @bill/);
       // Escape cancels the next gesture without changing units or source references.
