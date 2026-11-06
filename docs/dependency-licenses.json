@@ -21,7 +21,9 @@
     "name": "@biomejs/cli-darwin-arm64",
     "version": "2.6.4",
     "license": "MIT OR Apache-2.0",
-    "installed": true
+    "installed": true,
+    "licenceText": "inherited from @biomejs/biome",
+    "reason": "Platform-specific binary installed by @biomejs/biome; it ships no licence file, declares the same licence (MIT OR Apache-2.0), and @biomejs/biome ships the licence text."
   },
   {
     "name": "@biomejs/cli-darwin-x64",
@@ -153,13 +155,17 @@
     "name": "@esbuild/darwin-arm64",
     "version": "0.25.12",
     "license": "MIT",
-    "installed": true
+    "installed": true,
+    "licenceText": "inherited from esbuild",
+    "reason": "Platform-specific binary installed by esbuild; it ships no licence file, declares the same licence (MIT), and esbuild ships the licence text."
   },
   {
     "name": "@esbuild/darwin-arm64",
     "version": "0.28.2",
     "license": "MIT",
-    "installed": true
+    "installed": true,
+    "licenceText": "inherited from esbuild",
+    "reason": "Platform-specific binary installed by esbuild; it ships no licence file, declares the same licence (MIT), and esbuild ships the licence text."
   },
   {
     "name": "@esbuild/darwin-x64",
@@ -503,7 +509,9 @@
     "name": "@rollup/rollup-darwin-arm64",
     "version": "4.67.4",
     "license": "MIT",
-    "installed": true
+    "installed": true,
+    "licenceText": "inherited from rollup",
+    "reason": "Platform-specific binary installed by rollup; it ships no licence file, declares the same licence (MIT), and rollup ships the licence text."
   },
   {
     "name": "@rollup/rollup-darwin-x64",

@@ -1,16 +1,6 @@
-import { readFile, readdir, writeFile, stat } from 'node:fs/promises';
+import { readFile, readdir, stat, writeFile } from 'node:fs/promises';
 import { join } from 'node:path';
-const allowed = new Set([
-  'MIT',
-  'Apache-2.0',
-  'BSD-2-Clause',
-  'BSD-3-Clause',
-  'ISC',
-  '0BSD',
-  '(MIT OR CC0-1.0)',
-  '(MIT OR Unlicense)',
-  'MIT OR Apache-2.0',
-]);
+import { approvedLicences, licenceVerdict } from './licence-rules.mjs';
 const record = (value) => typeof value === 'object' && value !== null && !Array.isArray(value);
 function jsonRecord(text, label) {
   const value = JSON.parse(text);
@@ -21,32 +11,19 @@ const lock = jsonRecord(await readFile('package-lock.json', 'utf8'), 'Lockfile')
 if (!record(lock.packages)) throw new Error('Lockfile packages must be an object');
 const rows = [];
 const violations = [];
-let installed = 0;
+// Read every installed package once; the verdicts below may consult a parent.
+const installedPackages = new Map();
 for (const [path, info] of Object.entries(lock.packages)) {
   if (!path) continue;
   if (!record(info)) throw new Error(`Invalid lockfile entry: ${path}`);
-  const fallbackName = path.split('node_modules/').at(-1);
-  let present = true;
+  let pkg;
   try {
-    await stat(join(path, 'package.json'));
+    pkg = jsonRecord(await readFile(join(path, 'package.json'), 'utf8'), path);
   } catch (error) {
-    if (error.code === 'ENOENT' && info.optional === true) present = false;
-    else throw error;
+    // Optional platform binaries for other systems are in the lockfile but not installed.
+    if (error.code === 'ENOENT' && info.optional === true) continue;
+    throw error;
   }
-  if (!present) {
-    if (typeof info.license !== 'string' || !allowed.has(info.license))
-      violations.push(
-        `${fallbackName}: unapproved optional dependency licence ${info.license ?? 'UNKNOWN'}`,
-      );
-    rows.push({
-      name: fallbackName,
-      version: info.version,
-      license: info.license,
-      installed: false,
-    });
-    continue;
-  }
-  const pkg = jsonRecord(await readFile(join(path, 'package.json'), 'utf8'), path);
   if (typeof pkg.name !== 'string' || typeof pkg.version !== 'string')
     throw new Error(`Invalid package identity in ${path}`);
   const license =
@@ -55,20 +32,40 @@ for (const [path, info] of Object.entries(lock.packages)) {
       : record(pkg.license)
         ? pkg.license.type
         : undefined;
-  if (!allowed.has(license)) violations.push(`${pkg.name}: ${license ?? 'UNKNOWN'}`);
-  // Native platform packages inherit the checked wrapper's shipped licence.
-  let licencePath = path;
-  if (pkg.name.startsWith('@esbuild/'))
-    licencePath = path.includes('node_modules/tsx/')
-      ? 'node_modules/tsx/node_modules/esbuild'
-      : 'node_modules/esbuild';
-  if (pkg.name.startsWith('@rollup/rollup-')) licencePath = 'node_modules/rollup';
-  if (pkg.name.startsWith('@biomejs/cli-')) licencePath = 'node_modules/@biomejs/biome';
-  const files = await readdir(licencePath);
-  if (!files.some((name) => /^(licen[cs]e|copying)([-._]|$)/i.test(name)))
-    violations.push(`${pkg.name}: missing shipped licence file`);
+  const files = await readdir(path);
+  installedPackages.set(path, {
+    name: pkg.name,
+    version: pkg.version,
+    license,
+    hasLicenceFile: files.some((name) => /^(licen[cs]e|copying)([-._]|$)/i.test(name)),
+  });
+}
+let installed = 0;
+for (const [path, info] of Object.entries(lock.packages)) {
+  if (!path) continue;
+  const name = path.split('node_modules/').at(-1);
+  const pkg = installedPackages.get(path);
+  if (!pkg) {
+    // Not installed here: the lockfile's declared licence must still be approved.
+    if (typeof info.license !== 'string' || !approvedLicences.has(info.license))
+      violations.push(
+        `${name}: unapproved optional dependency licence ${info.license ?? 'UNKNOWN'}`,
+      );
+    rows.push({ name, version: info.version, license: info.license, installed: false });
+    continue;
+  }
+  const verdict = licenceVerdict(lock.packages, path, (at) => installedPackages.get(at));
+  if (!verdict.ok) violations.push(verdict.reason);
   installed++;
-  rows.push({ name: pkg.name, version: pkg.version, license, installed: true });
+  rows.push({
+    name: pkg.name,
+    version: pkg.version,
+    license: pkg.license,
+    installed: true,
+    ...(verdict.ok && verdict.inheritedFrom
+      ? { licenceText: `inherited from ${verdict.inheritedFrom}`, reason: verdict.reason }
+      : {}),
+  });
 }
 // Fonts are vendored assets, not npm dependencies: IBM Plex latin woff2 files
 // from @fontsource 5.3.0 under the SIL Open Font License 1.1, served from

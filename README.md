@@ -1,5 +1,5 @@
 # Sourced
-<!-- hf-badge -->
+[![Harry Freeman](docs/brand/hf-badge.svg)](https://harryfreeman.dev)
 
 Sourced is a calculation pad built on a small programming language in which every number carries its unit and its source, and, when it is uncertain, a spread that is either cited or marked as assumed. The checker refuses an unsourced number and checks every unit, each answer can show exactly where it came from, and an uncertain answer becomes a distribution of 100,000 runs with a variance-based sensitivity analysis that says which uncertainty actually matters. Most numbers people rely on, a carbon footprint or a payback period, hide both where their inputs came from and how sure anyone is about them. Sourced makes both visible, and keeps them attached as you change the calculation.
 
